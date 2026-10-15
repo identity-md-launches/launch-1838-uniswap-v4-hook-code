@@ -25,11 +25,29 @@ export function candidateQuota(balance: bigint, eligible: bigint, sold: bigint, 
   return fullyUnlocked ? balance : balance < quota ? balance : quota;
 }
 
+// Successor (UnlkHookV3): the only execution route is the deployed Sepolia Universal Router the IMD Explorer
+// uses, pinned by address and runtime hash in the hook itself. No custom router exists.
+export const UNIVERSAL_ROUTER = "0x3a9d48ab9751398bbfa63ad67599bb04e4bdf98b" as const;
+export const UNIVERSAL_ROUTER_CODEHASH = "0x14f7c9253a5406bafa90cb512f4a2db2a10513886603e7a9b4a2e72329e944f4" as const;
+export const SUCCESSOR_FLAGS = 0x3fcc;
+
+export type SwapMode = "buyExactIn" | "buyExactOut" | "sellExactIn" | "sellExactOut";
+/// Treasury fee per standard v4 mode. `poolLeg` is the executed pool ETH (the fee base); `trader` is the ETH
+/// the trader pays (buys) or receives (sells). For exact-output buys / exact-input sells `amount` is the
+/// executed pool ETH leg from a quote; for exact-input buys it is the gross budget, for exact-output sells the net.
+export function successorFee(mode: SwapMode, amount: bigint): {poolLeg:bigint; fee:bigint; trader:bigint} {
+  if (amount < 0n) throw new Error("ETH amount must be non-negative");
+  if (mode === "buyExactIn") { const poolLeg = buyPoolInput(amount); return {poolLeg, fee: amount - poolLeg, trader: amount}; }
+  if (mode === "sellExactOut") { const poolLeg = sellGrossOutput(amount); return {poolLeg, fee: poolLeg - amount, trader: amount}; }
+  const fee = fee75(amount);
+  return {poolLeg: amount, fee, trader: mode === "buyExactOut" ? amount + fee : amount - fee};
+}
+
 // Deliberately absent until an independently reviewed Sepolia release supplies REAL addresses and hashes.
 // No address is guessed, and no candidate transaction can be enabled by the current source.
 export interface CandidateDeployment {
-  chainId: 11155111; token: Address; hook: Address; router: Address; vault: Address;
-  runtimeHashes: Record<"token" | "hook" | "router" | "vault", Hex>;
+  chainId: 11155111; token: Address; hook: Address; vault: Address;
+  runtimeHashes: Record<"token" | "hook" | "vault", Hex>;
 }
 export const CANDIDATE_DEPLOYMENT: CandidateDeployment | null = null;
 

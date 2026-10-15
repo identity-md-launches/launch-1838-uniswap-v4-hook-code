@@ -8,6 +8,15 @@ import fs from "node:fs";
 import { readCandidate } from "../src/candidateReader";
 import { keccak256, type PublicClient } from "viem";
 import type { CandidateDeployment } from "../src/candidate";
+import { UNIVERSAL_ROUTER, UNIVERSAL_ROUTER_CODEHASH, successorFee } from "../src/candidate";
+
+test("successor fee: ETH in every standard mode, fee base is the executed pool ETH leg", () => {
+  const a=successorFee("buyExactIn",10n**18n); assert.equal(a.poolLeg+a.fee,10n**18n); assert.ok(a.fee>=fee75(a.poolLeg)&&a.fee<=fee75(a.poolLeg)+1n);
+  const b=successorFee("buyExactOut",10n**18n); assert.equal(b.fee,75n*10n**14n); assert.equal(b.trader,10n**18n+b.fee);
+  const c=successorFee("sellExactIn",10n**18n); assert.equal(c.trader,10n**18n-c.fee);
+  const d=successorFee("sellExactOut",10n**18n); assert.equal(d.poolLeg-d.fee,10n**18n); assert.ok(d.fee>=fee75(d.poolLeg)&&d.fee<=fee75(d.poolLeg)+1n);
+  assert.throws(()=>successorFee("buyExactIn",-1n));
+});
 
 test("candidate stays undeployed and has all sixteen tiers, separate from the live rules", () => {
   assert.equal(CANDIDATE_DEPLOYMENT, null);
@@ -84,18 +93,21 @@ test("recorded authentic mainnet tokenURI images #1116 and #1181 render as inert
 
 test("future candidate reads refuse absent deployment, wrong chain and wrong code", async () => {
   await assert.rejects(readCandidate(null,{} as PublicClient),/not deployed/);
-  const fixture: CandidateDeployment={chainId:11155111,token:"0x1111111111111111111111111111111111111111",hook:"0x2222222222222222222222222222222222222222",router:"0x3333333333333333333333333333333333333333",vault:"0x4444444444444444444444444444444444444444",runtimeHashes:{token:keccak256("0x6000"),hook:keccak256("0x6000"),router:keccak256("0x6000"),vault:keccak256("0x6000")}};
+  const fixture: CandidateDeployment={chainId:11155111,token:"0x1111111111111111111111111111111111111111",hook:"0x2222222222222222222222222222222222222222",vault:"0x4444444444444444444444444444444444444444",runtimeHashes:{token:keccak256("0x6000"),hook:keccak256("0x6000"),vault:keccak256("0x6000")}};
   await assert.rejects(readCandidate(fixture,{getChainId:async()=>1} as unknown as PublicClient),/Sepolia/);
   await assert.rejects(readCandidate(fixture,{getChainId:async()=>11155111,getBlockNumber:async()=>123n,getBytecode:async()=>"0x"} as unknown as PublicClient),/hash mismatch/);
 });
 
 test("future reader separates donations, earned funds and unavailable oracle data", async () => {
-  const fixture: CandidateDeployment={chainId:11155111,token:"0x1111111111111111111111111111111111111111",hook:"0x2222222222222222222222222222222222222222",router:"0x3333333333333333333333333333333333333333",vault:"0x4444444444444444444444444444444444444444",runtimeHashes:{token:keccak256("0x6000"),hook:keccak256("0x6000"),router:keccak256("0x6000"),vault:keccak256("0x6000")}};
-  const values: Record<string,unknown>={activated:true,token:fixture.token,router:fixture.router,nftFeeVault:fixture.vault,
-    oracle:fixture.hook,poolManager:fixture.router,FEE:12500,FLAGS:0x3fc4,p:2000,tier:0,fullyUnlocked:false,
+  const fixture: CandidateDeployment={chainId:11155111,token:"0x1111111111111111111111111111111111111111",hook:"0x2222222222222222222222222222222222222222",vault:"0x4444444444444444444444444444444444444444",runtimeHashes:{token:keccak256("0x6000"),hook:keccak256("0x6000"),vault:keccak256("0x6000")}};
+  const values: Record<string,unknown>={activated:true,token:fixture.token,UNIVERSAL_ROUTER,nftFeeVault:fixture.vault,
+    oracle:fixture.hook,poolManager:"0x3333333333333333333333333333333333333333",FEE:12500,FLAGS:0x3fcc,p:2000,tier:0,fullyUnlocked:false,
     BENEFICIARY:NFT_BENEFICIARY,hook:fixture.hook,totalAccrued:100n,totalRedeemed:70n,totalWithdrawn:20n,
     claimable:50n,pendingClaims:30n,donations:10n,donationsWithdrawn:3n,balanceOf:80n,eligible:100n,sold:5n,remainingQuota:15n};
-  const client={getChainId:async()=>11155111,getBlockNumber:async()=>123n,getBytecode:async()=>"0x6000",
+  const routerRuntime=("0x"+fs.readFileSync("../docs/candidate/network/router.runtime.hex","utf8").trim().replace(/^0x/,"")) as `0x${string}`;
+  assert.equal(keccak256(routerRuntime),UNIVERSAL_ROUTER_CODEHASH);
+  const client={getChainId:async()=>11155111,getBlockNumber:async()=>123n,
+    getBytecode:async({address}:{address:string})=>address.toLowerCase()===UNIVERSAL_ROUTER?routerRuntime:"0x6000",
     readContract:async({functionName}:{functionName:string})=>{if(functionName==="fdvUsd")throw new Error("stale oracle");return values[functionName];}} as unknown as PublicClient;
   const snapshot=await readCandidate(fixture,client,NFT_BENEFICIARY);
   assert.equal(snapshot.fdv,null);assert.match(snapshot.oracleError??"",/unavailable/);

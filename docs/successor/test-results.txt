@@ -1,0 +1,35 @@
+Ran 1 test for test/successor/SuccessorInvariants.t.sol:SuccessorMultihopTest
+[PASS] testMultihopOfficialLegCreditsInitiatorEvenWhenOutputLeavesUnlk() (gas: 1961728)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 41.43ms (752.61µs CPU time)
+Ran 23 tests for test/successor/Successor.t.sol:SuccessorTest
+[PASS] testBatchedBuysAllCreditTheInitiator() (gas: 463840)
+[PASS] testClaimsAndPayerCreditIndependentOfTradingAndDeduplicated() (gas: 754542)
+[PASS] testCycleInOneExecutionCannotFarmQuota() (gas: 1199533)
+[PASS] testDirectUnlockerCannotTrade() (gas: 513524)
+[PASS] testDivertedDeliveryCreditsInitiatorNotRecipient() (gas: 596333)
+[PASS] testExactOutputBuyChargesEthOnExecutedInputAndRefundsUnusedValue() (gas: 586480)
+[PASS] testExactOutputSellDeliversExactNetEth() (gas: 915573)
+[PASS] testExplorerBuyExactInputChargesEthFeeOnExecutedPoolLeg() (gas: 651573)
+[PASS] testExplorerSellExactInputThroughPermit2ChargesExecutedEthOutput() (gas: 903970)
+[PASS] testFeeInclusiveMinimumAboveQuoteRevertsWithoutState() (gas: 594299)
+[PASS] testFullUnlockKeepsTheStandardRouteAndBypassesQuota() (gas: 301039236)
+[PASS] testFuzzBuyThenSellConservesEthAndFees(uint96,uint16) (runs: 256, μ: 727798, ~: 730048)
+[PASS] testFuzzSpecifiedFeeBounds(uint128) (runs: 256, μ: 6324, ~: 6325)
+[PASS] testGenericQuoteForZeroQuotaWalletIsSimulationOnly() (gas: 674606)
+[PASS] testHookDataIsIgnored() (gas: 731203)
+[PASS] testLookalikeCodeAtRouterOrQuoterAddressRejected() (gas: 575287)
+[PASS] testPrefundedSaleConsumesInitiatorQuotaNotFunder() (gas: 796620)
+[PASS] testSaleBeyondSeedBoundaryIsRejectedAndNotCharged() (gas: 1247945)
+[PASS] testSetupIsSealedAndCompanionsPinned() (gas: 475937)
+[PASS] testSmartAccountIsTheInitiator() (gas: 532401)
+[PASS] testTransfersNeverMigrateRights() (gas: 679420)
+[PASS] testTreasuryRedeemsAndOnlyBeneficiaryWithdrawsEth() (gas: 571674)
+[PASS] testUnactivatedLaunchRejectsStandardSwapsAndWrongCodes() (gas: 24435297)
+Suite result: ok. 23 passed; 0 failed; 0 skipped; finished in 419.58ms (523.30ms CPU time)
+Ran 1 test for test/successor/SuccessorInvariants.t.sol:SuccessorInvariantTest
+[PASS]
+[PASS] invariant_creditsEqualExecutedBuysOnly
+[PASS] invariant_feesAreNativeClaimsAndNeverUnlk
+[PASS] invariant_quotaNeverExceededForAnyInitiator
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 2.15s (2.09s CPU time)
+Ran 3 test suites in 2.15s (2.61s CPU time): 25 tests passed, 0 failed, 0 skipped (25 total tests)
