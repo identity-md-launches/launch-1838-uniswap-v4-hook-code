@@ -1,0 +1,17 @@
+block 11906030 hash 0x6f28f1fbf63d2f156df99f6aa68b5cda5b4af8bec7d5a488b6057dddf7b98a40 ts 0x6ace21cc
+No files changed, compilation skipped
+Ran 1 test for test/scratch/ForkRehearsal.t.sol:ScratchForkRehearsal
+[PASS] testRecordedForkBothStagesTradingClaimsAndFees() (gas: 8725665)
+Logs:
+  FORK ONLY opening sqrtPriceX96: 560670463299104726496887759586116
+  FORK ONLY seed tokens: 869999999999999999999997987
+  FORK ONLY seed quote capacity: 17372529781893206513
+  FORK ONLY token: 0x369612240808e0a224B3B2e4C75Ec4A4087b8d55
+  FORK ONLY hook: 0x0A0051635898147DF7dc3779c0022D1E996c7fc0
+  FORK ONLY distributor: 0x707D04fe9bB224a4293794CCE1ed08F317A04029
+  FORK ONLY router: 0xbe24DED88D63d4BF267affbf646faBb75f20843D
+  FORK ONLY evidence: 0xCaB2bdeED5A7dcE6147f3058b54E6fD67Ac3b375
+  FORK ONLY oracle: 0x6f5a7a67198f86D676b37318BC553406CE810832
+  FORK ONLY poolId: 0x374378fb666a3986e9cacf5989537393eae86d752dbb6906dce0dfcff50e2a99
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 15.38ms (4.46ms CPU time)
+Ran 1 test suite in 48.87ms (15.38ms CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)

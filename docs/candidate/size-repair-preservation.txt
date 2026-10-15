@@ -1,0 +1,2 @@
+PASS: 605 files unchanged: contracts, tests, Solidity dependencies, app source/assets, both frontend exports and Foundry configuration/manifest.
+PASS: 15 sealed-source provenance hashes match the requested commit.

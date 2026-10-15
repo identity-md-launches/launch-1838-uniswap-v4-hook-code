@@ -1,0 +1,28 @@
+✔ candidate stays undeployed and has all sixteen tiers, separate from the live rules (0.593706ms)
+✔ fee-inclusive buy and net exact-output sell preserve wei rounding (7.149793ms)
+✔ metadata URLs reject executable, private, credentialed and ambiguous schemes (0.403698ms)
+✔ SVG is inert image content and rejects active/external references (1.150624ms)
+✔ index cursors cannot redirect requests or inject objects (0.221918ms)
+✔ metadata and resource failures are visible, never unsafe fallback content (2.215029ms)
+✔ indexed inventory is paginated discovery; only current onchain owners appear (0.444357ms)
+✔ recorded authentic mainnet tokenURI images #1116 and #1181 render as inert blobs offline (1.98161ms)
+✔ future candidate reads refuse absent deployment, wrong chain and wrong code (1.591991ms)
+✔ future reader separates donations, earned funds and unavailable oracle data (1.529492ms)
+✔ wallet allowance uses exact floors, sales and balance caps (1.146545ms)
+✔ scenario holds ledger fixed, final unlock includes transfer-only balances, achieved tiers never imply revoked rights (0.14688ms)
+✔ large BigInt values and all tiers retain monotonic allowance (2.161458ms)
+✔ input and slippage reject unsafe formats and preserve a wei (0.388768ms)
+✔ oracle progress distinguishes invalid, stale, gap, below target and elapsed-but-unconfirmed (0.216819ms)
+✔ real native round proofs reject wrong amount, recipient, incomplete tree and duplicates (76.636823ms)
+✔ live same-block buy simulations match exact fee/delta arithmetic (0.270779ms)
+✔ swap step accounts exact fees and partial fills in both directions (0.198149ms)
+✔ percentage fills floor in wei, reserve gas and never exceed spendable balance (0.190988ms)
+✔ confirmation progress does not increase merely because the clock advances (0.15399ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 151.955062

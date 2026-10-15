@@ -1,0 +1,11 @@
+Extracted from final all-tests.txt; same compiler and supplied fuzz seed.
+
+Ran 6 tests for test/compatibility/RecordedRouter.t.sol:RecordedRouterTest
+[PASS] testActualQuoterCannotCommitPoolTradesOrHookWrites() (gas: 298154)
+[PASS] testBatchBuysCanAggregateDeliveryToAnotherWallet() (gas: 325865)
+[PASS] testCounterexampleTakeAllVersusTakeBobIdenticalHookObservations() (gas: 611752)
+[PASS] testMultihopBuyOutputNeverDeliveredToAnyWallet() (gas: 1235667)
+[PASS] testPermit2UserSourceVersusRouterPrefundingSameLogicalSender() (gas: 809841)
+[PASS] testSmartWalletDoesNotRevealTakeBeneficiary() (gas: 449760)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 422.77ms (2.86ms CPU time)
+

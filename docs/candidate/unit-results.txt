@@ -1,0 +1,46 @@
+Extracted from final all-tests.txt; same compiler and supplied fuzz seed.
+
+Ran 7 tests for test/candidate/Quoter.t.sol:CandidateQuoterTest
+[PASS] testExactOutputBuyQuoteIncludesFeeAndRollsBack() (gas: 982523)
+[PASS] testExactOutputSellQuoteRequiresGrossTranslationAndRollsBack() (gas: 1058630)
+[PASS] testGenericBuyQuoteMatchesFeeInclusiveExecutionWithoutCommitting() (gas: 704054)
+[PASS] testGenericSellQuoteIsNotWalletSellCapacity() (gas: 1128840)
+[PASS] testNonemptyQuoteDataIsRejected() (gas: 69218)
+[PASS] testUniversalRouterTradesExplicitlyRejectedUntilAttributionRedesign() (gas: 110317)
+[PASS] testWrongQuoterCodeCannotUseQuoteExemptionToCommit() (gas: 612054)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 22.08ms (4.79ms CPU time)
+
+Ran 12 tests for test/candidate/Fees.t.sol:CandidateFeesTest
+[PASS] testDonatedManagerClaimsAreNotFeeRevenueAndLockedRedemptionRollsBack() (gas: 1135553)
+[PASS] testExactOutputBoundsCannotWrapIntoExactInput() (gas: 599580)
+[PASS] testFreshTokenOnlyManagerAndAllFourSwapModes() (gas: 1699039)
+[PASS] testFuzzBuyRounding(uint128) (runs: 256, μ: 1994, ~: 1996)
+[PASS] testFuzzSellRounding(uint128) (runs: 256, μ: 1610, ~: 1627)
+[PASS] testOnlyBeneficiaryWithdrawsNoRedirectAndDonationsSeparate() (gas: 855328)
+[PASS] testPartialBuyChargesExecutedLegAndRefundsUnusedBudget() (gas: 524800)
+[PASS] testPartialExactOutputRevertsAllPoolCreditsAndFeeChanges() (gas: 977721)
+[PASS] testPartialSellChargesOnlyExecutedOutputAndReturnsUnusedTokens() (gas: 920453)
+[PASS] testRejectingBeneficiaryCannotHaltSwapsAndFailedWithdrawalRetainsFunds() (gas: 1363888)
+[PASS] testSlippageAndOverQuotaRollbackFeesAndCredits() (gas: 1204447)
+[PASS] testTransfersClaimsAndLpCollectionDoNotAccrueFees() (gas: 1219280)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 124.98ms (17.87ms CPU time)
+
+Ran 4 tests for test/candidate/Adversarial.t.sol:CandidateAdversarialTest
+[PASS] testAfterCallbackAndReplayCannotCreateRightsOrFees() (gas: 575539)
+[PASS] testBatchAndPrefundingCannotChangeSourcingOrDelivery() (gas: 818510)
+[PASS] testEveryCompanionCreationPinRejectsTamperedCodeAtomically() (gas: 38438727)
+[PASS] testFuzzExecutedBuyAndSellFees(uint96) (runs: 256, μ: 974828, ~: 972082)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 1.12s (1.08s CPU time)
+
+Ran 1 test for test/candidate/SetupScript.t.sol:CandidateSetupScriptTest
+[PASS] testActualFactoryLaunchThenPreparedCompanionsAndAtomicActivation() (gas: 17380932)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 103.96ms (2.11ms CPU time)
+
+Ran 5 tests for test/candidate/TiersAndSetup.t.sol:CandidateTiersTest
+[PASS] testAllSixteenThresholds() (gas: 461702)
+[PASS] testInvalidDataCadenceAndGapCannotAdvanceOrRevoke() (gas: 16292660)
+[PASS] testNativePreActivationClaimDeduplicatesAndAllocationSurvivesTransfers() (gas: 35647833)
+[PASS] testSequentialAllTiersFinal24HoursPermanentBypassAndFeePersists() (gas: 321640971)
+[PASS] testSetupAndBypassFailClosed() (gas: 1280938)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 2.41s (2.30s CPU time)
+

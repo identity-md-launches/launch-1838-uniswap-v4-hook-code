@@ -1,0 +1,8 @@
+Compiling 108 files with Solc 0.8.26
+Solc 0.8.26 finished in 1.07s
+Error: Compiler run failed:
+Error (6160): Wrong argument count for function call: 1 arguments given but expected 2.
+  --> rehearsal/Sepolia.t.sol:46:24:
+   |
+46 |         hookInitCode = deployer.initCode(
+   |                        ^ (Relevant source part starts here and spans across multiple lines).

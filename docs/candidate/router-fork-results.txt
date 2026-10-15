@@ -1,0 +1,16 @@
+Extracted from final fork-results.txt; Sepolia block 11918468.
+
+Ran 6 tests for test/scratch/RouterFork.t.sol:RecordedBlockRouterForkTest
+[PASS] testActualQuoterCannotCommitPoolTradesOrHookWrites() (gas: 298154)
+[PASS] testBatchBuysCanAggregateDeliveryToAnotherWallet() (gas: 325877)
+[PASS] testCounterexampleTakeAllVersusTakeBobIdenticalHookObservations() (gas: 611776)
+Logs:
+  Same executed output; different beneficiary: 987402494003717132
+  Identical beforeSwap observation: 0x09425f78d614b06a99b96ecaa53d10f355049f4254c4da8b0ab9e441803f2f7b
+  Identical afterSwap observation: 0x388a843e3ad3404e674bed2096e9eed7203549b09c755340fd280b3259400fe1
+
+[PASS] testMultihopBuyOutputNeverDeliveredToAnyWallet() (gas: 1235679)
+[PASS] testPermit2UserSourceVersusRouterPrefundingSameLogicalSender() (gas: 809865)
+[PASS] testSmartWalletDoesNotRevealTakeBeneficiary() (gas: 449772)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 3.48s (1.62s CPU time)
+

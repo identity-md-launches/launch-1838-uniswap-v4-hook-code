@@ -1,0 +1,14 @@
+Extracted from final fork-results.txt; Sepolia block 11918468.
+
+Ran 1 test for test/scratch/SetupFork.t.sol:CandidateSepoliaRehearsal
+[PASS] testRecordedForkBothStagesTradingClaimsAndFees() (gas: 10557766)
+Logs:
+  FORK ONLY token: 0x369612240808e0a224B3B2e4C75Ec4A4087b8d55
+  FORK ONLY hook: 0x5Ce9918754301C2c23E79F6bd09Db71772b9bfC4
+  FORK ONLY distributor: 0x707D04fe9bB224a4293794CCE1ed08F317A04029
+  FORK ONLY router: 0x3205B7d3f04Bea684797033838aEfAc1F8297c3a
+  FORK ONLY evidence: 0x6baB8E3f380b6Ed0f90558a461333D9a28A1E544
+  FORK ONLY oracle: 0x36dA729763cf77368fC53937E148ab43D95DDD07
+  FORK ONLY poolId: 0xa6aff024915b8c1e9ec0ef41eb5f49717ec7fdde43c1472107d13a25de05ec62
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 5.37s (1.54s CPU time)
