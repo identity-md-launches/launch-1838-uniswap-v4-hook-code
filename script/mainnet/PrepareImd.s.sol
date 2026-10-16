@@ -8,7 +8,7 @@ import {UnlkImdOracle} from "../../src/mainnet/UnlkImdOracle.sol";
 import {MerkleClaimEvidence} from "../../src/MerkleClaimEvidence.sol";
 import {IClaimEvidence} from "../../src/interfaces/IIntegration.sol";
 import {IImdUsdSource} from "../../src/mainnet/UnlkImdOracle.sol";
-import {ImdV4UsdSource} from "../../src/mainnet/ImdV4UsdSource.sol";
+import {ImdSampledUsdSource} from "../../src/mainnet/ImdSampledUsdSource.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /// @notice Calldata preparation only. No broadcast, key access, environment read or deployment occurs here.
@@ -16,7 +16,8 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract PrepareImd is Script {
     /// @notice Calldata only. Missing venue evidence blocks use; never supplies a stand-in venue.
     function preparePriceSource() external pure returns (bytes memory) {
-        return abi.encodeCall(UnlkImdHook.deployPriceSource, (type(ImdV4UsdSource).creationCode, bytes("")));
+        return
+            abi.encodeCall(UnlkImdHook.deployPriceSource, (type(ImdSampledUsdSource).creationCode, bytes("")));
     }
 
     struct Config {

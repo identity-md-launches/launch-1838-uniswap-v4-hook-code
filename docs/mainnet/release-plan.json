@@ -43,22 +43,35 @@
     "continuesAfterUnlock": true
   },
   "priceSource": {
-    "contract": "ImdV4UsdSource",
+    "contract": "ImdSampledUsdSource",
     "constructorArguments": [],
+    "creationCommitment": "ImdReviewedCode.PRICE_SOURCE",
     "poolId": "0xb07d640fd9e2eb9dc81b953c8e4fd006bdfeaf276010fb5418eb763ca15abfb3",
-    "status": "blocked: observed depth below screening floor, no complete real history, sustained manipulation economics unresolved",
+    "poolKey": {
+      "currency0": "native ETH (0x0)",
+      "currency1": "0xd34a99bc0f67ae1bbd63c660e6d0b0dd03e263b7",
+      "fee": 10000,
+      "tickSpacing": 200,
+      "hooks": "0x0"
+    },
+    "ethUsd": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
+    "status": "blocked: repeated/sustained manipulation passes; model net profit positive at final bypass with attacker-owned LP; independent review pending",
+    "observation": "permissionless sampled spot, NOT continuous history and NOT a v4 TWAP",
     "windowsSeconds": [
       7200,
       86400
     ],
     "warmupSeconds": 86400,
-    "confirmations": 64,
-    "maxAgeSeconds": 1200,
-    "maxBlockGapSeconds": 60,
-    "maxDivergenceBps": 1000,
-    "minimumVirtualEthWei": "10000000000000000000000",
-    "history": "every consecutive produced block authenticated by blockhash/header/account/storage proofs; no spot extrapolation",
-    "configuredProductionSource": null
+    "minHistorySeconds": 172800,
+    "minSampleIntervalSeconds": 60,
+    "maxSampleGapSeconds": 1200,
+    "maxTicksPerMinute": 50,
+    "maxLagTicks": 2000,
+    "minimumVirtualEthWei": "250000000000000000000",
+    "maxFeedAgeSeconds": 5400,
+    "keeper": "anyone calls sample() at least every 20 minutes; gas ~93k per sample including base",
+    "configuredProductionSource": null,
+    "design": "revision/SAMPLED_ORACLE.md"
   },
   "recordedBlock": 26203203,
   "services": "network/mainnet.json",
@@ -89,5 +102,23 @@
     "buyCreditMaturity": "next block; E remains cumulative; claim and payer credits unaffected",
     "walletExecutor": "optional immutable controller; separate E/S; standard router remains directly accessible",
     "residualH01": "High, blocking: mature shared capacity remains poolable"
+  },
+  "historicalProofPriceSource": {
+    "contract": "ImdV4UsdSource",
+    "constructorArguments": [],
+    "poolId": "0xb07d640fd9e2eb9dc81b953c8e4fd006bdfeaf276010fb5418eb763ca15abfb3",
+    "status": "historical, no longer admitted by deployPriceSource; superseded by the authorized sampled redesign",
+    "windowsSeconds": [
+      7200,
+      86400
+    ],
+    "warmupSeconds": 86400,
+    "confirmations": 64,
+    "maxAgeSeconds": 1200,
+    "maxBlockGapSeconds": 60,
+    "maxDivergenceBps": 1000,
+    "minimumVirtualEthWei": "10000000000000000000000",
+    "history": "every consecutive produced block authenticated by blockhash/header/account/storage proofs; no spot extrapolation",
+    "configuredProductionSource": null
   }
 }

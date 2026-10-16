@@ -2,8 +2,15 @@
 
 **CODE COMPLETE FOR THIS MITIGATION CANDIDATE; RELEASE BLOCKED.** This is not a claim of global H-01 prevention, production-safe irreversible unlocking, independent audit, public deployment or publication. The original independent High remains High. The exact submission commit must be supplied by the contributor upload step; local `.git` access/writes and public transactions were not performed.
 
+> **Oracle redesign revision:** rows marked (redesign) supersede the proof-source rows below; see [SAMPLED_ORACLE.md](SAMPLED_ORACLE.md).
+
 | Area | Status | Evidence / remaining condition |
 | --- | --- | --- |
+| (redesign) Active price source | Implemented, review pending | `ImdSampledUsdSource` pinned as `PRICE_SOURCE`; proof source rejected at setup; 15 sampled-source tests incl. fuzz; real pool/feed read at block 26204279 |
+| (redesign) Oracle manipulation | **High, unresolved** | Flash/anchor contained; repeated/sustained pass; final-bypass model profitable with attacker-owned LP (synthetic) |
+| (redesign) Spot display | Implemented, preview only | `web/src/spotPrice.ts`, 4 new frontend tests; UNLK leg unavailable until deployment |
+| (redesign) Full checks | Passed locally | 345 Foundry tests (seed 0x575e97c9…4312), fmt check, frontend typecheck/build/28 tests; author checks only |
+| (redesign) Independent review | **Pending** | None obtained in this run |
 | Preserved target and economics | Implemented | Mainnet univ4_hook UNLK/IMD, 1B/18 decimals, 10/87/3, 1.25% official fee, 75bps IMD vault, fixed beneficiary, principal lock, sixteen 20–100% tiers and final bypass |
 | Standard router / normal wallets / smart accounts | Tested | All four modes, token ordering, locally signed Permit2, Quoter, directed recipient, batch, multihop, alternate executor and smart-account tests; no tx.origin or EOA gate |
 | H-01 atomic recycling reduction | Implemented | One-block buy maturity; cumulative E preserved; normal claims and transfers unaffected |

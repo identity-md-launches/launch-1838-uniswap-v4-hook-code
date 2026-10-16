@@ -19,7 +19,7 @@ import {Hooks} from "v4-core/src/libraries/Hooks.sol";
 import {UnlkImdHook} from "../../src/mainnet/UnlkImdHook.sol";
 import {MainnetRuntime} from "./MainnetRuntime.sol";
 import {MainnetPins} from "../../src/mainnet/MainnetPins.sol";
-import {ImdV4UsdSource} from "../../src/mainnet/ImdV4UsdSource.sol";
+import {ImdSampledUsdSource} from "../../src/mainnet/ImdSampledUsdSource.sol";
 import {ImdUsdSource, IV3OraclePool} from "../../src/mainnet/ImdUsdSource.sol";
 import {IImdUsdSource} from "../../src/mainnet/UnlkImdOracle.sol";
 import {MockImdMarket} from "./MockImdMarket.sol";
@@ -174,7 +174,7 @@ abstract contract ImdFixture is Test {
         );
         _freshFeed();
         vm.prank(owner);
-        address source = hook.deployPriceSource(type(ImdV4UsdSource).creationCode, bytes(""));
+        address source = hook.deployPriceSource(type(ImdSampledUsdSource).creationCode, bytes(""));
         // SYNTHETIC oracle only: redirect priceUsd to the historical v3 mock adapter. No proof/history
         // safety is claimed by these router/economics fixtures. V4 proof tests never use this redirection.
         ImdUsdSource synthetic =

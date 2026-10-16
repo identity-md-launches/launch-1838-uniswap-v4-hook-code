@@ -7,7 +7,7 @@
     "constructorWords": 0,
     "initcodeBytesWithConstructor": 3444,
     "immutableReferences": {
-      "66669": [
+      "66664": [
         {
           "start": 570,
           "length": 32
@@ -31,7 +31,7 @@
     "constructorWords": 2,
     "initcodeBytesWithConstructor": 6007,
     "immutableReferences": {
-      "60658": [
+      "60653": [
         {
           "start": 554,
           "length": 32
@@ -53,7 +53,7 @@
           "length": 32
         }
       ],
-      "60660": [
+      "60655": [
         {
           "start": 730,
           "length": 32
@@ -69,7 +69,7 @@
     "constructorWords": 3,
     "initcodeBytesWithConstructor": 7655,
     "immutableReferences": {
-      "77635": [
+      "79959": [
         {
           "start": 940,
           "length": 32
@@ -83,7 +83,7 @@
           "length": 32
         }
       ],
-      "77645": [
+      "79969": [
         {
           "start": 556,
           "length": 32
@@ -93,7 +93,7 @@
           "length": 32
         }
       ],
-      "77648": [
+      "79972": [
         {
           "start": 675,
           "length": 32
@@ -121,7 +121,7 @@
     "constructorWords": 3,
     "initcodeBytesWithConstructor": 4735,
     "immutableReferences": {
-      "72608": [
+      "72923": [
         {
           "start": 293,
           "length": 32
@@ -163,7 +163,7 @@
           "length": 32
         }
       ],
-      "72610": [
+      "72925": [
         {
           "start": 465,
           "length": 32
@@ -181,7 +181,7 @@
           "length": 32
         }
       ],
-      "72616": [
+      "72931": [
         {
           "start": 599,
           "length": 32
@@ -211,7 +211,7 @@
           "length": 32
         }
       ],
-      "72618": [
+      "72933": [
         {
           "start": 504,
           "length": 32
@@ -232,35 +232,24 @@
     "initcodeBytesWithConstructor": 7263,
     "immutableReferences": {}
   },
-  "ImdV4UsdSource": {
-    "creationKeccak": "0x491923a78651b19d12ee6726ce52944f9483c48cdd792b865bc141bf7424c201",
-    "creationBytes": 11619,
-    "runtimeTemplateKeccak": "0xf715cbf559302b8f41995eecc22737d9c3135ae82e7862964dba9cf9ac06a296",
-    "runtimeBytes": 11569,
+  "ImdSampledUsdSource": {
+    "creationKeccak": "0xcc41e96f4df03749101cba4c0ea0f1b19b8504147e5adfa3da5654ae07123760",
+    "creationBytes": 6677,
+    "runtimeTemplateKeccak": "0x6abe1cc73f4ccaeed5a8974178c10ae5961146b446ef6a63e0e82623cb7d6c53",
+    "runtimeBytes": 6649,
     "constructorWords": 0,
-    "initcodeBytesWithConstructor": 11619,
-    "immutableReferences": {
-      "64211": [
-        {
-          "start": 540,
-          "length": 32
-        },
-        {
-          "start": 771,
-          "length": 32
-        }
-      ]
-    }
+    "initcodeBytesWithConstructor": 6677,
+    "immutableReferences": {}
   },
   "UnlkImdHook": {
-    "creationKeccak": "0x7302b202e3ef8507d16e6f8fa2873b13ff724930af27cc55a93b1efaeea75217",
+    "creationKeccak": "0xbfee184e75a16ddb7831110aed280a31dd01adcf630bd116ba16066229f40ab6",
     "creationBytes": 24184,
-    "runtimeTemplateKeccak": "0x65225c5d380367a0390fe1744e543d2bbaca104a20180bba6e35783eb69fe90b",
+    "runtimeTemplateKeccak": "0x55213d6cf528851b014c2a0af6f47f0c526a8752241450ba01e6a9003fde5437",
     "runtimeBytes": 22985,
     "constructorWords": 4,
     "initcodeBytesWithConstructor": 24312,
     "immutableReferences": {
-      "66340": [
+      "67299": [
         {
           "start": 3098,
           "length": 32
@@ -338,7 +327,7 @@
           "length": 32
         }
       ],
-      "66343": [
+      "67302": [
         {
           "start": 3218,
           "length": 32
@@ -388,7 +377,7 @@
           "length": 32
         }
       ],
-      "66345": [
+      "67304": [
         {
           "start": 1771,
           "length": 32
@@ -418,7 +407,7 @@
           "length": 32
         }
       ],
-      "66348": [
+      "67307": [
         {
           "start": 2010,
           "length": 32
@@ -446,7 +435,7 @@
     "constructorWords": 2,
     "initcodeBytesWithConstructor": 4944,
     "immutableReferences": {
-      "70120": [
+      "71079": [
         {
           "start": 104,
           "length": 32
@@ -468,7 +457,7 @@
           "length": 32
         }
       ],
-      "70123": [
+      "71082": [
         {
           "start": 171,
           "length": 32

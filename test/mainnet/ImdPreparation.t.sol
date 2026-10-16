@@ -4,7 +4,7 @@ import {UnlkImdHook} from "../../src/mainnet/UnlkImdHook.sol";
 import {ImdFixture} from "./ImdFixture.sol";
 import {MockImdMarket} from "./MockImdMarket.sol";
 import {PrepareImd} from "../../script/mainnet/PrepareImd.s.sol";
-import {ImdV4UsdSource} from "../../src/mainnet/ImdV4UsdSource.sol";
+import {ImdSampledUsdSource} from "../../src/mainnet/ImdSampledUsdSource.sol";
 import {ImdUsdSource, IV3OraclePool} from "../../src/mainnet/ImdUsdSource.sol";
 import {IImdUsdSource} from "../../src/mainnet/UnlkImdOracle.sol";
 import {MainnetPins} from "../../src/mainnet/MainnetPins.sol";
@@ -19,7 +19,7 @@ contract ImdPreparationTest is ImdFixture {
     function testChangedImdRuntimeOrWrongChainCannotStage() public {
         market = new MockImdMarket();
         vm.prank(owner);
-        address source = hook.deployPriceSource(type(ImdV4UsdSource).creationCode, bytes(""));
+        address source = hook.deployPriceSource(type(ImdSampledUsdSource).creationCode, bytes(""));
         uint256 snapshot = vm.snapshotState();
         uint64 staging = hook.stagings();
         vm.etch(MainnetPins.IMD_ADDRESS, hex"00");

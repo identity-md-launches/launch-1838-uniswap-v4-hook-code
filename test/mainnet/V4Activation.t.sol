@@ -2,6 +2,7 @@
 pragma solidity 0.8.26;
 import {ImdFixture} from "./ImdFixture.sol";
 import {ImdV4UsdSource} from "../../src/mainnet/ImdV4UsdSource.sol";
+import {ImdSampledUsdSource} from "../../src/mainnet/ImdSampledUsdSource.sol";
 import {ImdUsdSource, IV3OraclePool} from "../../src/mainnet/ImdUsdSource.sol";
 import {UnlkImdHook} from "../../src/mainnet/UnlkImdHook.sol";
 import {UnlkImdOracle, IImdUsdSource} from "../../src/mainnet/UnlkImdOracle.sol";
@@ -24,14 +25,23 @@ contract V4ActivationTest is ImdFixture {
         assertEq(hook.stagedPriceSource(), address(0));
     }
 
-    function testUnprovenV4CannotActivateAndNativeClaimsRemainIndependent() public {
+    /// @dev Oracle redesign: the historical per-block proof source stays in the tree but is no longer the
+    /// active candidate. Setup cannot stage it, so no proof collector is a release requirement.
+    function testHistoricalProofSourceIsNoLongerAdmitted() public {
         vm.prank(owner);
-        address source = hook.deployPriceSource(type(ImdV4UsdSource).creationCode, "");
+        vm.expectRevert(UnlkImdHook.InvalidConfig.selector);
+        hook.deployPriceSource(type(ImdV4UsdSource).creationCode, "");
+        assertEq(hook.stagedPriceSource(), address(0));
+    }
+
+    function testColdSampledSourceCannotActivateAndNativeClaimsRemainIndependent() public {
+        vm.prank(owner);
+        address source = hook.deployPriceSource(type(ImdSampledUsdSource).creationCode, "");
         vm.prank(owner);
         (address e, address o,) = hook.deployCompanions(LAUNCH_NUMBER, IImdUsdSource(source), _codes());
         _certifySingle(MerkleClaimEvidence(e), 0, alice, REWARD);
         vm.prank(owner);
-        vm.expectRevert(ImdV4UsdSource.InvalidPrice.selector);
+        vm.expectRevert(ImdSampledUsdSource.InvalidPrice.selector);
         hook.configureAndActivate(IClaimEvidence(e), UnlkImdOracle(o), LAUNCH_NUMBER);
         assertFalse(hook.activated());
         assertEq(hook.p(), 2000);

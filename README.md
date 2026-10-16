@@ -1,5 +1,7 @@
 # UNLOCK / UNLK — mainnet source candidate, release blocked
 
+**Oracle redesign (this revision, continuing `8f31511e2b0d27d7c59b8bb33aeb65aeb3ae6ed6`):** the active candidate price source is now the pool-derived, no-paid-feed `ImdSampledUsdSource`: official UNLK/IMD hook TWAP × permissionless **sampled** IMD/native-ETH v4 pool price × validated Chainlink ETH/USD, FDV = 1B × USD/UNLK. Setup no longer admits the per-block proof source, so no ~10 ETH/day proof collector is a release requirement; a keeper must still call `sample()` at least every 20 minutes (normal gas, ~0.007 ETH/day at an illustrative 1 gwei). The preview site shows a pool-derived spot price/indicative FDV with block, sources, freshness and unavailable states. Manipulation tests show flash/same-block and anchor attacks are contained, but **repeated or sustained manipulation passes, and a modelled final-bypass attack with attacker-owned LP nets profit**: the oracle High remains open, H-01 remains High, independent review of these changes is **pending**, and deployment stays blocked. See [SAMPLED_ORACLE.md](docs/mainnet/revision/SAMPLED_ORACLE.md).
+
 This continues `18062fc08c2fc3ab47b79316c1d1dea701e36e7f`. It preserves the live launch1560 contracts/configuration and prior candidate history. No public transaction, deployment, token replacement or site publication was performed. Candidate writes remain disabled and the NFT gallery stays read-only.
 
 The mainnet target remains IMD `univ4_hook`, 1B UNLK / 18 decimals, 10/87/3 allocation, standard Universal Router compatibility, official 1.25% fee plus 75 bps in IMD to the fixed beneficiary, protected seed principal and the existing sixteen sequential USD tiers with permanent final bypass.
@@ -19,7 +21,7 @@ Build and verify offline with the unchanged pinned Solidity 0.8.26 configuration
 
 ```sh
 forge build
-forge test --fuzz-seed 0x1d49232a44ff2493b73de50672c825b51c99d7c5f9f966576d2050bd2684d532
+forge test --fuzz-seed 0x575e97c9f046cbe85a2214c324e8188fb0e71e67df58fe9dfbb5d33225f04312
 forge fmt --check
 python3 scripts/mainnet/artifacts.py --check
 node web/scripts/typecheck-offline.mjs

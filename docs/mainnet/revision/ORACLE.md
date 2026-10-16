@@ -1,5 +1,7 @@
 # IMD/USD: authenticated history implemented; production safety remains blocked
 
+> **Superseded as the active candidate** by the authorized no-paid-feed redesign in [SAMPLED_ORACLE.md](SAMPLED_ORACLE.md). This proof source and its evidence remain as history; setup no longer admits it and no proof collector is a release requirement. The real market/round-trip evidence below is still used.
+
 The active candidate stages **ImdV4UsdSource**, not the inactive v3 reader. `ImdUsdSource.sol` remains as historical code and negative-test coverage; its creation code is rejected by `UnlkImdHook.deployPriceSource`. No working production oracle or real 24-hour source history is claimed.
 
 ## Actual market evidence

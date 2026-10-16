@@ -5,6 +5,7 @@ import { mainnetClient as client } from "./mainnet";
 import { useWallet } from "./wallet";
 import { readMainnetCandidate, type CandidateSnapshot } from "./mainnetReader";
 import { NftGallery } from "./NftGallery";
+import { readSpot, IMD_ETH_POOL_ID, ETH_USD_FEED, type SpotSnapshot } from "./spotPrice";
 
 export function NextRelease() {
   const wallet = useWallet();
@@ -18,6 +19,15 @@ export function NextRelease() {
     void refresh();const timer=setInterval(refresh,30000);
     return()=>{active=false;clearInterval(timer);};
   },[wallet.address,wallet.receiptVersion]);
+  const [spot,setSpot]=useState<SpotSnapshot | null>(null);
+  const [spotError,setSpotError]=useState("");
+  useEffect(()=>{
+    let active=true;
+    const refresh=()=>readSpot(client,CANDIDATE_DEPLOYMENT).then(value=>{if(active){setSpot(value);setSpotError("");}}).catch(e=>{if(active){setSpot(null);setSpotError(e instanceof Error?e.message:"Spot read failed");}});
+    void refresh();const timer=setInterval(refresh,30000);
+    return()=>{active=false;clearInterval(timer);};
+  },[]);
+  const usd=(value:bigint|null|undefined,digits=6)=>typeof value==="bigint"?`$${Number(formatEther(value)).toLocaleString("en-US",{maximumSignificantDigits:digits})}`:"Unavailable";
   const personal=snapshot?.wallet?.address.toLowerCase()===wallet.address?.toLowerCase()?snapshot?.wallet:null;
   const [imdAmount, setImdAmount] = useState("1");
   const [mode, setMode] = useState<SwapMode>("buyExactIn");
@@ -33,10 +43,23 @@ export function NextRelease() {
     sellExactIn:"Sell, exact input · executed pool IMD from quote (IMD Explorer)", sellExactOut:"Sell, exact output · net IMD wanted",
   };
   return <div className="next-release">
-    <div className="page-intro"><p className="small muted">Source preview · undeployed</p><h1>Next release & NFT treasury</h1><p>The successor candidate trades through the standard Uniswap Universal Router (<a href={`https://etherscan.io/address/${UNIVERSAL_ROUTER}`} target="_blank" rel="noreferrer">pinned mainnet router ↗</a>) with empty hookData, the same route the IMD Explorer uses. It is undeployed, a separate review confirms a High shared-executor quota-pooling finding, and the new authenticated-block IMD/USD source lacks production history and sufficient evidenced depth. Release is blocked. No candidate swap can be sent from this page.</p></div>
+    <div className="page-intro"><p className="small muted">Source preview · undeployed</p><h1>Next release & NFT treasury</h1><p>The successor candidate trades through the standard Uniswap Universal Router (<a href={`https://etherscan.io/address/${UNIVERSAL_ROUTER}`} target="_blank" rel="noreferrer">pinned mainnet router ↗</a>) with empty hookData, the same route the IMD Explorer uses. It is undeployed, a separate review confirms a High shared-executor quota-pooling finding, and its new sampled IMD/USD source does not withstand sustained or repeated manipulation at a measured cost below realizable unlocked value. Release is blocked. No candidate swap can be sent from this page.</p></div>
     <div className="notice"><strong>Eligibility follows the initiator.</strong> Shared executors pool quota across their users. This High finding blocks release. The account that calls the Universal Router (an EOA or a smart account, as reported by the router's <code>msgSender()</code>) gets the credit E for every official-pool buy in that transaction, and spends its own quota S for every sell. That holds even when a different wallet receives the tokens (TAKE to another address), when the input was prefunded by someone else, and in batches or multihop routes. A wallet that only receives tokens gets the tokens, not the credit. Transfers never move rights. This does not prove who actually paid or who received the tokens.</div>
     <div className="notice"><strong>Implemented reductions, with limits.</strong> New buy credit E becomes spendable only in the next block. This applies on chain across every UI and standard-router call; it prevents atomic recycling of new credit. Earlier mature quota can still be pooled by shared executors. An optional immutable WalletExecutor accepts only its one wallet, fixes funding and proceeds to that wallet, and has a separate executor E/S ledger. It cannot move or merge direct-wallet rights. A smart account that itself shares authority can still pool rights. This does not resolve the High finding.</div>
     <div className="notice">The Trade, My Unlock and Milestones tabs still show the existing live Sepolia rules: 25% initially, seven rates and no NFT hook fee. New rules require a separately reviewed release.</div>
+    <section className="panel spot-price"><div className="panel-heading"><h2>Pool-derived spot price</h2><span className="small muted">Indicative · not a milestone input</span></div>
+      {spotError && <p role="alert">Spot price unavailable: {spotError}</p>}
+      <dl className="wallet-ledger">
+        <div><dt>USD per IMD (spot)</dt><dd>{usd(spot?.usdPerImd)}</dd></div>
+        <div><dt>USD per UNLK (spot)</dt><dd>{usd(spot?.usdPerUnlk)}</dd></div>
+        <div><dt>Indicative fully diluted value · 1B UNLK × spot</dt><dd>{usd(spot?.fdv,8)}</dd></div>
+        <div><dt>IMD/ETH pool tick</dt><dd>{spot?String(spot.imdEth.tick):"Unavailable"}</dd></div>
+        <div><dt>Chainlink ETH/USD</dt><dd>{spot?`$${(Number(spot.ethUsd.answer)/1e8).toFixed(2)} · updated ${new Date(Number(spot.ethUsd.updatedAt)*1000).toLocaleTimeString()}`:"Unavailable"}</dd></div>
+      </dl>
+      {spot && <p className="small muted">Ethereum block {spot.block.toString()} · block time {new Date(Number(spot.blockTime)*1000).toLocaleString()} · refreshed every 30s</p>}
+      {spot?.unlkUnavailable && <p className="small">{spot.unlkUnavailable}</p>}
+      <p className="small">Sources, read at one block: official UNLK/IMD pool slot0 (after deployment) × IMD/native-ETH Uniswap v4 pool <code>{IMD_ETH_POOL_ID.slice(0,10)}…</code> slot0 in the canonical PoolManager × <a href={`https://etherscan.io/address/${ETH_USD_FEED}`} target="_blank" rel="noreferrer">Chainlink ETH/USD ↗</a> (rejected if older than 90 minutes). No stablecoin peg, website price label or price API is used. Spot can be moved inside a single block, so this is a display value only. FDV is supply times spot, not a circulating market cap and not extractable cash. No price history or candles are shown because none is recorded.</p>
+    </section>
     <section className="panel candidate-vault"><div className="panel-heading"><h2>Candidate fee vault</h2><span className="small muted">Not deployed</span></div>
       {readError && <p role="alert">{readError}</p>}
       <dl className="wallet-ledger">{[
@@ -61,7 +84,7 @@ export function NextRelease() {
       <p>The pool fee stays at 1.25% (1% to the payer, 0.25% to IMD) and is charged on the input token. The extra fee is 0.75% of the IMD that actually crossed the pool, and it continues after full unlock. Exact-output buys and exact-input sells are charged after the swap on the executed leg. Exact-input buys and exact-output sells are charged before the swap, at most 1 wei above floor(0.75%). A swap that would only partly fill, or would leave the seed range, reverts completely and pays nothing. Because the two fees are taken on different bases, the nominal 2% is not the exact effective cost. Quotes from the pinned standard Quoter include the treasury fee. Buy approvals cover gross IMD including that fee; sell approvals cover fee-inclusive UNLK input limits. ERC20 approval to Permit2 and Permit2 authorization to the router are separate. Slippage, expiry, quota, insufficient IMD/UNLK, source outage and range-exit errors must be resolved before submitting a future reviewed transaction.</p>
       <p>A generic quote is a simulation, not proof that a wallet can sell. A reviewed transaction must also verify the actual wallet balance, eligible acquisitions E, executed sales S and Q = max(0, floor(mature E × p / 10000) − S), limited by the wallet’s actual token balance. E remains cumulative; ordinary transfers create no credit.</p>
     </section>
-    <section className="panel"><div className="panel-heading"><h2>Candidate unlock ladder</h2><span className="small muted">20% initially</span></div><ol className="candidate-tiers">{NEXT_THRESHOLDS.map((target,index)=><li key={target}><strong>${target.toLocaleString("en-US")}</strong><span>{NEXT_RATES[index+1]/100}%</span><small>{index===15?"24h · permanent bypass for everyone":"6h confirmation"}</small></li>)}</ol><p>Sequential confirmations; 2h UNLK/IMD TWAP warm-up, 24h authenticated IMD/ETH history and source warm-up, every consecutive block proven under the canonical state root, 64-block delay, 20m freshness, 10% cross-window divergence and a 10,000 virtual-ETH depth floor. The recorded market is below that floor. These screens do not prove sustained manipulation is uneconomic. There is no working production oracle activation yet. Locked UNLK seed depth, 4m cadence and 10m maximum gap. Invalid data cannot advance or revoke rights. Transfers create no eligibility. Other pools can bypass this hook’s quota.</p></section>
+    <section className="panel"><div className="panel-heading"><h2>Candidate unlock ladder</h2><span className="small muted">20% initially</span></div><ol className="candidate-tiers">{NEXT_THRESHOLDS.map((target,index)=><li key={target}><strong>${target.toLocaleString("en-US")}</strong><span>{NEXT_RATES[index+1]/100}%</span><small>{index===15?"24h · permanent bypass for everyone":"6h confirmation"}</small></li>)}</ol><p>Sequential confirmations; 2h UNLK/IMD TWAP from the official hook's own observations, times a SAMPLED IMD/ETH price: anyone may sample the external pool at most once a minute, each sample moves the recorded value at most 50 ticks per elapsed minute, samples more than 20m apart or below 250 virtual ETH void every window they touch, and the lower of the 2h and 24h sampled means is used after a 24h warm-up. Sampled observations are not continuous pool history and not a Uniswap TWAP. Repeated or sustained manipulation that pays swap fees at every sample still passes; this is an open High release blocker. Locked UNLK seed depth, 4m cadence and 10m maximum gap. Invalid data cannot advance or revoke rights. Transfers create no eligibility. Other pools can bypass this hook’s quota.</p></section>
     <NftGallery/>
   </div>;
 }
