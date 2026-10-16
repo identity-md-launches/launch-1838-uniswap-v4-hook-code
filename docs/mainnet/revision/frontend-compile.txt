@@ -1,0 +1,13 @@
+
+  test/scratch/frontend/candidate.test.mjs  372.9kb
+
+⚡ Done in 10494ms
+
+  test/scratch/frontend/mainnet.test.mjs  356.2kb
+
+⚡ Done in 3630ms
+
+  test/scratch/frontend/math.test.mjs  379.5kb
+
+⚡ Done in 2204ms
+Tests compiled into test/scratch/frontend. Run node --test from web/.

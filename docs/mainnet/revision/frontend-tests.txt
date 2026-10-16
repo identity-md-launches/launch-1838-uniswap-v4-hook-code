@@ -1,0 +1,32 @@
+✔ successor fee: ETH in every standard mode, fee base is the executed pool ETH leg (3.998591ms)
+✔ candidate stays undeployed and has all sixteen tiers, separate from the live rules (0.348382ms)
+✔ fee-inclusive buy and net exact-output sell preserve wei rounding (151.179943ms)
+✔ metadata URLs reject executable, private, credentialed and ambiguous schemes (38.520991ms)
+✔ SVG is inert image content and rejects active/external references (5.121616ms)
+✔ index cursors cannot redirect requests or inject objects (0.844229ms)
+✔ metadata and resource failures are visible, never unsafe fallback content (27.036885ms)
+✔ indexed inventory is paginated discovery; only current onchain owners appear (6.872693ms)
+✔ recorded authentic mainnet tokenURI images #1116 and #1181 render as inert blobs offline (64.576243ms)
+✔ future candidate reads refuse absent deployment, wrong chain and wrong code (8.887638ms)
+✔ future reader separates donations, earned funds and unavailable oracle data (113.808328ms)
+✔ mainnet writes remain blocked; no Sepolia route or native funding in unsigned plans (323.616333ms)
+✔ IMD treasury budgets preserve raw-unit conservation and conservative rounding (87.244986ms)
+✔ mature quota never counts this block's buys and final bypass remains permanent (0.500143ms)
+✔ wallet allowance uses exact floors, sales and balance caps (3.702439ms)
+✔ scenario holds ledger fixed, final unlock includes transfer-only balances, achieved tiers never imply revoked rights (1.87671ms)
+✔ large BigInt values and all tiers retain monotonic allowance (6.648851ms)
+✔ input and slippage reject unsafe formats and preserve a wei (9.169112ms)
+✔ oracle progress distinguishes invalid, stale, gap, below target and elapsed-but-unconfirmed (12.303725ms)
+✔ real native round proofs reject wrong amount, recipient, incomplete tree and duplicates (1495.766472ms)
+✔ live same-block buy simulations match exact fee/delta arithmetic (0.660785ms)
+✔ swap step accounts exact fees and partial fills in both directions (0.448475ms)
+✔ percentage fills floor in wei, reserve gas and never exceed spendable balance (3.546479ms)
+✔ confirmation progress does not increase merely because the clock advances (0.339114ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3294.561001

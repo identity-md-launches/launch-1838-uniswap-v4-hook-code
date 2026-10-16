@@ -7,7 +7,7 @@
     "constructorWords": 0,
     "initcodeBytesWithConstructor": 3444,
     "immutableReferences": {
-      "66496": [
+      "66669": [
         {
           "start": 570,
           "length": 32
@@ -31,7 +31,7 @@
     "constructorWords": 2,
     "initcodeBytesWithConstructor": 6007,
     "immutableReferences": {
-      "60485": [
+      "60658": [
         {
           "start": 554,
           "length": 32
@@ -53,7 +53,7 @@
           "length": 32
         }
       ],
-      "60487": [
+      "60660": [
         {
           "start": 730,
           "length": 32
@@ -69,7 +69,7 @@
     "constructorWords": 3,
     "initcodeBytesWithConstructor": 7655,
     "immutableReferences": {
-      "77462": [
+      "77635": [
         {
           "start": 940,
           "length": 32
@@ -83,7 +83,7 @@
           "length": 32
         }
       ],
-      "77472": [
+      "77645": [
         {
           "start": 556,
           "length": 32
@@ -93,7 +93,7 @@
           "length": 32
         }
       ],
-      "77475": [
+      "77648": [
         {
           "start": 675,
           "length": 32
@@ -121,7 +121,7 @@
     "constructorWords": 3,
     "initcodeBytesWithConstructor": 4735,
     "immutableReferences": {
-      "72435": [
+      "72608": [
         {
           "start": 293,
           "length": 32
@@ -163,7 +163,7 @@
           "length": 32
         }
       ],
-      "72437": [
+      "72610": [
         {
           "start": 465,
           "length": 32
@@ -181,7 +181,7 @@
           "length": 32
         }
       ],
-      "72443": [
+      "72616": [
         {
           "start": 599,
           "length": 32
@@ -211,7 +211,7 @@
           "length": 32
         }
       ],
-      "72445": [
+      "72618": [
         {
           "start": 504,
           "length": 32
@@ -232,269 +232,265 @@
     "initcodeBytesWithConstructor": 7263,
     "immutableReferences": {}
   },
-  "ImdUsdSource": {
-    "creationKeccak": "0x1b0e2385f02578597e6d729a571419c87f3572d03cc7d35f119aa8a8ca9020fc",
-    "creationBytes": 5905,
-    "runtimeTemplateKeccak": "0xe242b90bdbe5bef09f35752d52dc4961e7024498e4f404539828712e131b313a",
-    "runtimeBytes": 5533,
-    "constructorWords": 3,
-    "initcodeBytesWithConstructor": 6001,
+  "ImdV4UsdSource": {
+    "creationKeccak": "0x491923a78651b19d12ee6726ce52944f9483c48cdd792b865bc141bf7424c201",
+    "creationBytes": 11619,
+    "runtimeTemplateKeccak": "0xf715cbf559302b8f41995eecc22737d9c3135ae82e7862964dba9cf9ac06a296",
+    "runtimeBytes": 11569,
+    "constructorWords": 0,
+    "initcodeBytesWithConstructor": 11619,
     "immutableReferences": {
-      "73791": [
+      "64211": [
         {
-          "start": 242,
+          "start": 540,
           "length": 32
         },
         {
-          "start": 640,
-          "length": 32
-        },
-        {
-          "start": 916,
-          "length": 32
-        },
-        {
-          "start": 1086,
-          "length": 32
-        },
-        {
-          "start": 1217,
-          "length": 32
-        },
-        {
-          "start": 1504,
-          "length": 32
-        },
-        {
-          "start": 1583,
-          "length": 32
-        },
-        {
-          "start": 1892,
-          "length": 32
-        },
-        {
-          "start": 2192,
-          "length": 32
-        }
-      ],
-      "73793": [
-        {
-          "start": 344,
-          "length": 32
-        },
-        {
-          "start": 607,
-          "length": 32
-        }
-      ],
-      "73795": [
-        {
-          "start": 281,
-          "length": 32
-        },
-        {
-          "start": 1850,
-          "length": 32
-        },
-        {
-          "start": 3167,
-          "length": 32
-        }
-      ],
-      "73797": [
-        {
-          "start": 517,
-          "length": 32
-        },
-        {
-          "start": 561,
+          "start": 771,
           "length": 32
         }
       ]
     }
   },
   "UnlkImdHook": {
-    "creationKeccak": "0x88dc4e2f21743047a9175770e60d61f45ab4ddf0b85fd486c26580c4182e7245",
-    "creationBytes": 23885,
-    "runtimeTemplateKeccak": "0xf69e8544783fcac8b266eb6e36b78b670dbbfefcab39aa70b004029b2ea15e9a",
-    "runtimeBytes": 22686,
+    "creationKeccak": "0x7302b202e3ef8507d16e6f8fa2873b13ff724930af27cc55a93b1efaeea75217",
+    "creationBytes": 24184,
+    "runtimeTemplateKeccak": "0x65225c5d380367a0390fe1744e543d2bbaca104a20180bba6e35783eb69fe90b",
+    "runtimeBytes": 22985,
     "constructorWords": 4,
-    "initcodeBytesWithConstructor": 24013,
+    "initcodeBytesWithConstructor": 24312,
     "immutableReferences": {
-      "61514": [
+      "66340": [
         {
-          "start": 2984,
+          "start": 3098,
           "length": 32
         },
         {
-          "start": 3400,
+          "start": 3514,
           "length": 32
         },
         {
-          "start": 3727,
+          "start": 3841,
           "length": 32
         },
         {
-          "start": 4443,
+          "start": 4557,
           "length": 32
         },
         {
-          "start": 5055,
+          "start": 5169,
           "length": 32
         },
         {
-          "start": 5329,
+          "start": 5443,
           "length": 32
         },
         {
-          "start": 5544,
+          "start": 5658,
           "length": 32
         },
         {
-          "start": 6516,
+          "start": 6630,
           "length": 32
         },
         {
-          "start": 6651,
+          "start": 6765,
           "length": 32
         },
         {
-          "start": 7375,
+          "start": 7489,
           "length": 32
         },
         {
-          "start": 7998,
+          "start": 8124,
           "length": 32
         },
         {
-          "start": 8521,
+          "start": 8647,
           "length": 32
         },
         {
-          "start": 8880,
+          "start": 9006,
           "length": 32
         },
         {
-          "start": 11048,
+          "start": 11260,
           "length": 32
         },
         {
-          "start": 11941,
+          "start": 12153,
           "length": 32
         },
         {
-          "start": 14570,
+          "start": 14906,
           "length": 32
         },
         {
-          "start": 15346,
+          "start": 15645,
           "length": 32
         },
         {
-          "start": 16826,
+          "start": 17125,
           "length": 32
         },
         {
-          "start": 16986,
+          "start": 17285,
           "length": 32
         }
       ],
-      "61517": [
+      "66343": [
         {
-          "start": 3104,
+          "start": 3218,
           "length": 32
         },
         {
-          "start": 4290,
+          "start": 4404,
           "length": 32
         },
         {
-          "start": 6394,
+          "start": 6508,
           "length": 32
         },
         {
-          "start": 9422,
+          "start": 9548,
           "length": 32
         },
         {
-          "start": 9552,
+          "start": 9678,
           "length": 32
         },
         {
-          "start": 10369,
+          "start": 10495,
           "length": 32
         },
         {
-          "start": 10745,
+          "start": 10871,
           "length": 32
         },
         {
-          "start": 11406,
+          "start": 11618,
           "length": 32
         },
         {
-          "start": 11505,
+          "start": 11717,
           "length": 32
         },
         {
-          "start": 11606,
+          "start": 11818,
           "length": 32
         },
         {
-          "start": 12159,
+          "start": 12371,
           "length": 32
         },
         {
-          "start": 16167,
+          "start": 16466,
           "length": 32
         }
       ],
-      "61519": [
+      "66345": [
         {
-          "start": 1738,
+          "start": 1771,
           "length": 32
         },
         {
-          "start": 3472,
+          "start": 3586,
           "length": 32
         },
         {
-          "start": 3799,
+          "start": 3913,
           "length": 32
         },
         {
-          "start": 11111,
+          "start": 11323,
           "length": 32
         },
         {
-          "start": 16710,
+          "start": 17009,
           "length": 32
         },
         {
-          "start": 16754,
+          "start": 17053,
           "length": 32
         },
         {
-          "start": 16901,
+          "start": 17200,
           "length": 32
         }
       ],
-      "61522": [
+      "66348": [
         {
-          "start": 1977,
+          "start": 2010,
           "length": 32
         },
         {
-          "start": 5696,
+          "start": 5810,
           "length": 32
         },
         {
-          "start": 7590,
+          "start": 7704,
           "length": 32
         },
         {
-          "start": 8976,
+          "start": 9102,
+          "length": 32
+        }
+      ]
+    }
+  },
+  "WalletExecutor": {
+    "creationKeccak": "0x9acba1668eb88661d7489872a73e902e297383089744a76c511e1d83720122e0",
+    "creationBytes": 4880,
+    "runtimeTemplateKeccak": "0x329133b7ac85c8028092934e89edd09f6ea235319c6aa7e72943bf8fc1b29aac",
+    "runtimeBytes": 4576,
+    "constructorWords": 2,
+    "initcodeBytesWithConstructor": 4944,
+    "immutableReferences": {
+      "70120": [
+        {
+          "start": 104,
+          "length": 32
+        },
+        {
+          "start": 243,
+          "length": 32
+        },
+        {
+          "start": 460,
+          "length": 32
+        },
+        {
+          "start": 2254,
+          "length": 32
+        },
+        {
+          "start": 3001,
+          "length": 32
+        }
+      ],
+      "70123": [
+        {
+          "start": 171,
+          "length": 32
+        },
+        {
+          "start": 742,
+          "length": 32
+        },
+        {
+          "start": 903,
+          "length": 32
+        },
+        {
+          "start": 1039,
+          "length": 32
+        },
+        {
+          "start": 1228,
+          "length": 32
+        },
+        {
+          "start": 1919,
           "length": 32
         }
       ]

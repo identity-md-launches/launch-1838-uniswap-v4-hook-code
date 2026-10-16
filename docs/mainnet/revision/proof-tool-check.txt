@@ -1,0 +1,1 @@
+PASS: recorded header RLP matches canonical block hash, unsigned calldata matches delivered length/keccak commitment. No network, signing or broadcasting in this reproduction. Live historical proof generation was refused by the provider proof window; preparation from previously captured evidence succeeded earlier while within the submission horizon.

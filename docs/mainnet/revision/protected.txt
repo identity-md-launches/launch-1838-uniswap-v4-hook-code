@@ -1,0 +1,2 @@
+Protected harness files supplied: 0
+SKIPPED: no protected admission harness supplied in this task. Existing checker sources preserved unchanged. No protected-check pass claimed.

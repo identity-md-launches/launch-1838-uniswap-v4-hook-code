@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.26;
+import {QuotaMitigationTest} from "test/mainnet/QuotaMitigation.t.sol";
 import {ImdMultihopTest} from "test/mainnet/ImdMultihop.t.sol";
 import {ImdSetupTest} from "test/mainnet/ImdSetup.t.sol";
 import {Test} from "forge-std/Test.sol";
@@ -46,6 +47,20 @@ contract MainnetMultihopRehearsal is ImdMultihopTest {
 
     function _newManager() internal override returns (PoolManager) {
         vm.createSelectFork("https://ethereum-rpc.publicnode.com", 26203203);
+        require(block.chainid == 1, "mainnet fork required");
+        return PoolManager(payable(MainnetPins.MANAGER_ADDRESS));
+    }
+}
+
+/// @dev Actual router, factory, manager, token and Permit2; only unlock-pricing fixtures are synthetic.
+contract MainnetQuotaMitigationRehearsal is QuotaMitigationTest {
+    function setUp() public override {
+        LAUNCH_NUMBER = type(uint64).max - 3000;
+        ImdFixture.setUp();
+    }
+
+    function _newManager() internal override returns (PoolManager) {
+        vm.createSelectFork("https://ethereum-rpc.publicnode.com", 26203856);
         require(block.chainid == 1, "mainnet fork required");
         return PoolManager(payable(MainnetPins.MANAGER_ADDRESS));
     }

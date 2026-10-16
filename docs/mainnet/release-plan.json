@@ -1,7 +1,7 @@
 {
   "documentType": "mainnet-source-preparation-not-launch-manifest",
   "status": "BLOCKED_UNDEPLOYED_NO_PUBLIC_WRITES",
-  "baseCommit": "806e94d44d6a96b8561f48ebf5f744c4065c4918",
+  "baseCommit": "18062fc08c2fc3ab47b79316c1d1dea701e36e7f",
   "acceptedChangeCommit": null,
   "commitResponsibility": "Contributor uploader records the final exact commit; local .git writes are prohibited. Source hashes accompany this change set.",
   "chainId": 1,
@@ -43,16 +43,22 @@
     "continuesAfterUnlock": true
   },
   "priceSource": {
-    "contract": "ImdUsdSource",
-    "configuredProductionVenue": null,
-    "status": "missing reliable live depth and independently justified manipulation economics",
-    "discoveredV3Venue": "0xd6a822d028bbf7b6edfa1533e110ee40c08551d9",
-    "activeLiquidityAtRecordedBlock": "0",
+    "contract": "ImdV4UsdSource",
+    "constructorArguments": [],
+    "poolId": "0xb07d640fd9e2eb9dc81b953c8e4fd006bdfeaf276010fb5418eb763ca15abfb3",
+    "status": "blocked: observed depth below screening floor, no complete real history, sustained manipulation economics unresolved",
     "windowsSeconds": [
       7200,
       86400
     ],
-    "postCreationWarmupSeconds": 86400
+    "warmupSeconds": 86400,
+    "confirmations": 64,
+    "maxAgeSeconds": 1200,
+    "maxBlockGapSeconds": 60,
+    "maxDivergenceBps": 1000,
+    "minimumVirtualEthWei": "10000000000000000000000",
+    "history": "every consecutive produced block authenticated by blockhash/header/account/storage proofs; no spot extrapolation",
+    "configuredProductionSource": null
   },
   "recordedBlock": 26203203,
   "services": "network/mainnet.json",
@@ -67,15 +73,21 @@
   "hostingPublication": null,
   "review": {
     "sharedExecutor": "separate reviewer confirmed High H-01, blocking",
-    "finalMainnetCandidate": "pending independent review; follow-up tool request did not complete",
+    "finalMainnetCandidate": "pending independent review of FINAL changed source; no completed final assessment claimed",
     "authorChecks": "not independent authority"
   },
   "blockers": [
-    "High H-01: shared-executor quota pooling is unresolved; initiator authorization does not waive it",
-    "Reliable noncircular IMD/USD source with usable historical/current depth and sustained manipulation-cost evidence is not established",
-    "Independent review of final mainnet source, source configuration and exact accepted commit is pending",
-    "Browser/mobile checks unavailable: Playwright missing; protected admission harness inputs absent in this assignment",
-    "Actual production stage2 activation and postflight must be demonstrated after blockers are resolved; fork activation used synthetic pricing fixtures",
-    "Additional historical RPC probes later refused with HTTP403 requiring a personal token; future fork reruns need working authorized archive access. No credentials collected."
-  ]
+    "High H-01 remains unresolved for mature shared executor capacity",
+    "Oracle lacks complete real history and sufficient observed depth; no net sustained manipulation-cost safety bound",
+    "Independent review of final proof verifier, oracle economics, wallet execution and hook changes pending",
+    "Browser checks skipped (Playwright absent); protected admission harness not supplied",
+    "Continuous permissionless per-block proof capture/submission and gas sponsorship not deployed or demonstrated over full windows",
+    "Public stage1, stage2, postflight and hosting not authorized; observed fork activation uses explicitly synthetic pricing",
+    "Published commit must be assigned by contributor uploader; .git writes prohibited"
+  ],
+  "quotaMitigation": {
+    "buyCreditMaturity": "next block; E remains cumulative; claim and payer credits unaffected",
+    "walletExecutor": "optional immutable controller; separate E/S; standard router remains directly accessible",
+    "residualH01": "High, blocking: mature shared capacity remains poolable"
+  }
 }

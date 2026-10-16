@@ -1,3 +1,5 @@
+> Revision notice (2026-10-16): the historical report below describes the previous mainnet delivery. Current implementation, evidence and limits are in [revision/H-01.md](revision/H-01.md). The inactive v3 reader is no longer admitted; buy-credit maturity is now explicit. Historical results are not final-source certification.
+
 # Ethereum UNLK/IMD candidate — blocked, undeployed
 
 Base: `806e94d44d6a96b8561f48ebf5f744c4065c4918`. Public GitHub commit discovery found no newer accepted commit. Existing contracts, release records, dependency files, live launch1560 configuration, gallery, and old frontend trading paths are retained. New Solidity lives in `src/mainnet/`; this is source preparation, not a replacement/re-mint of a live token. New candidate writes are disabled.

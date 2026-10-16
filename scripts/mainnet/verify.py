@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
 """Read-only offline verification of recorded Ethereum runtime and source evidence."""
-import hashlib, json, pathlib, re, subprocess
+import hashlib, json, pathlib, re, subprocess, lzma
 root=pathlib.Path(__file__).resolve().parents[2]
 folder=root/'docs/mainnet/network'
+# Validate exact byte preservation for all archived historical evidence before the existing runtime checks.
+for evidence in json.loads((folder.parent/'evidence-archives.json').read_text()):
+    compressed=(root/evidence['archive']).read_bytes()
+    assert hashlib.sha256(compressed).hexdigest()==evidence['archiveSha256']
+    raw=lzma.decompress(compressed)
+    assert len(raw)==evidence['originalBytes'] and hashlib.sha256(raw).hexdigest()==evidence['sha256']
+print('All archived historical evidence bytes/hashes verified.')
 record=json.loads((folder/'mainnet.json').read_text())
 source=(root/'test/mainnet/MainnetRuntime.sol').read_text()
 for name in ['factory','manager','router','quoter','permit2','imd','ethUsd','fees','registry']:
@@ -13,7 +20,11 @@ for name in ['factory','manager','router','quoter','permit2','imd','ethUsd','fee
     assert digest==record['contracts'][name]['codehash'], name+' runtime hash'
     assert len(match.group(1))//2==record['contracts'][name]['bytes'], name+' length'
     if name in ('factory','imd'):
-        verified=json.loads((folder/(name+'.verified.json')).read_text())
+        archive=folder/(name+'.verified.json.xz')
+        original=lzma.decompress(archive.read_bytes())
+        record_archive=next(x for x in json.loads((folder.parent/'evidence-archives.json').read_text()) if x['archive']==str(archive.relative_to(root)))
+        assert hashlib.sha256(original).hexdigest()==record_archive['sha256'], name+' archived evidence byte preservation'
+        verified=json.loads(original)
         assert verified['runtimeMatch'] in ('match','exact_match') and verified['creationMatch'] in ('match','exact_match')
         assert verified['runtimeBytecode']['onchainBytecode'].lower()==runtime.lower()
         assert verified['stdJsonInput']['sources'], name+' exact compiler sources absent'

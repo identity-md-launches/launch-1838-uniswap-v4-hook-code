@@ -8,26 +8,15 @@ import {UnlkImdOracle} from "../../src/mainnet/UnlkImdOracle.sol";
 import {MerkleClaimEvidence} from "../../src/MerkleClaimEvidence.sol";
 import {IClaimEvidence} from "../../src/interfaces/IIntegration.sol";
 import {IImdUsdSource} from "../../src/mainnet/UnlkImdOracle.sol";
-import {ImdUsdSource, IV3OraclePool} from "../../src/mainnet/ImdUsdSource.sol";
+import {ImdV4UsdSource} from "../../src/mainnet/ImdV4UsdSource.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /// @notice Calldata preparation only. No broadcast, key access, environment read or deployment occurs here.
 /// Release is BLOCKED pending independent review. Inputs come from the actual new stage-1 factory receipt.
 contract PrepareImd is Script {
     /// @notice Calldata only. Missing venue evidence blocks use; never supplies a stand-in venue.
-    function preparePriceSource(IV3OraclePool venue, bytes32 codehash, uint128 minimumLiquidity)
-        external
-        pure
-        returns (bytes memory)
-    {
-        require(
-            address(venue) != address(0) && codehash != bytes32(0) && minimumLiquidity > 0,
-            "actual venue evidence required"
-        );
-        return abi.encodeCall(
-            UnlkImdHook.deployPriceSource,
-            (type(ImdUsdSource).creationCode, abi.encode(venue, codehash, minimumLiquidity))
-        );
+    function preparePriceSource() external pure returns (bytes memory) {
+        return abi.encodeCall(UnlkImdHook.deployPriceSource, (type(ImdV4UsdSource).creationCode, bytes("")));
     }
 
     struct Config {

@@ -119,6 +119,10 @@ contract UnlkImdHook is IHooks {
 
     mapping(address => uint256) public eligible;
     mapping(address => uint256) public sold;
+    /// @notice E is still cumulative acquisitions. Only this block's BUY credit is temporarily unspendable.
+    /// No transfers of rights; mature credits and native allocation/claim credits are unaffected.
+    mapping(address => uint256) public buyCreditBlock;
+    mapping(address => uint256) public immatureBuyCredit;
     mapping(address => uint256) public claimedCredit;
     bool public payerCredited;
     uint16 public p = 2000;
@@ -267,7 +271,7 @@ contract UnlkImdHook is IHooks {
     function deployPriceSource(bytes calldata code, bytes calldata args) external returns (address at) {
         if (msg.sender != setupAuthority) revert Unauthorized();
         if (activated) revert AlreadyActivated();
-        if (keccak256(code) != ReviewedCode.PRICE_SOURCE) revert InvalidConfig();
+        if (keccak256(code) != ReviewedCode.PRICE_SOURCE || args.length != 0) revert InvalidConfig();
         at = _create(bytes.concat(code, args), keccak256(abi.encode("price", ++stagings)));
         stagedPriceSource = at;
     }
@@ -478,7 +482,9 @@ contract UnlkImdHook is IHooks {
         if (tokenDelta < 0) {
             uint256 q = uint256(-int256(tokenDelta));
             uint256 next = sold[initiator] + q;
-            if (!fullyUnlocked && next > Math.mulDiv(eligible[initiator], p, 10000)) revert QuotaExceeded();
+            if (!fullyUnlocked && next > Math.mulDiv(spendableEligible(initiator), p, 10000)) {
+                revert QuotaExceeded();
+            }
             sold[initiator] = next;
             emit Sale(initiator, q);
         } else if (tokenDelta > 0) {
@@ -641,8 +647,14 @@ contract UnlkImdHook is IHooks {
 
     function remainingQuota(address trader) external view returns (uint256) {
         if (fullyUnlocked) return type(uint256).max;
-        uint256 cap = Math.mulDiv(eligible[trader], p, 10000);
+        uint256 cap = Math.mulDiv(spendableEligible(trader), p, 10000);
         return cap > sold[trader] ? cap - sold[trader] : 0;
+    }
+
+    /// @notice A buy cannot create spendable sale capacity in its own block, across ALL router calls/UIs.
+    /// This stops atomic buy-credit recycling, not shared executors spending already mature pooled rights.
+    function spendableEligible(address trader) public view returns (uint256) {
+        return eligible[trader] - (block.number <= buyCreditBlock[trader] ? immatureBuyCredit[trader] : 0);
     }
 
     // ------------------------------------------------------------------ milestones
@@ -728,6 +740,14 @@ contract UnlkImdHook is IHooks {
 
     function _credit(address recipient, uint256 amount, uint8 kind) private {
         eligible[recipient] += amount;
+        if (kind == 0) {
+            if (buyCreditBlock[recipient] < block.number) {
+                buyCreditBlock[recipient] = block.number;
+                immatureBuyCredit[recipient] = amount;
+            } else {
+                immatureBuyCredit[recipient] += amount;
+            }
+        }
         emit Credit(recipient, amount, kind);
     }
 

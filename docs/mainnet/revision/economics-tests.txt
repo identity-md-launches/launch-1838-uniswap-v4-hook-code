@@ -1,0 +1,57 @@
+Compiling 1 files with Solc 0.8.26
+Solc 0.8.26 finished in 5.72s
+Compiler run successful with warnings:
+Warning (2519): This declaration shadows an existing declaration.
+  --> src/mainnet/StateProof.sol:62:14:
+   |
+62 |         for (uint256 at = parent.payload; at < parent.end;) {
+   |              ^^^^^^^^^^
+Note: The shadowed declaration is here:
+  --> src/mainnet/StateProof.sol:69:9:
+   |
+69 |         uint256 at = parent.payload;
+   |         ^^^^^^^^^^
+
+Warning (2018): Function state mutability can be restricted to view
+   --> src/mainnet/UnlkImdHook.sol:222:5:
+    |
+222 |     function afterInitialize(address, PoolKey calldata key, uint160, int24)
+    |     ^ (Relevant source part starts here and spans across multiple lines).
+
+
+Ran 2 tests for test/scratch/V4OracleRehearsal.t.sol:V4ActualOracleRehearsal
+[PASS] testActualBlockhashAnchorsRecordedStateProofAndSourceFailsClosed() (gas: 3904584)
+Logs:
+  measured submit execution gas (excluding calldata/base tx): 1398021
+
+[PASS] testActualV4GrossCapitalAndNetExitCost() (gas: 4220521)
+Logs:
+  gross ETH capital: 10000000000000000000
+  IMD acquired: 3473406911024437774873
+  active virtual ETH after buy: 634798381609506443805
+  IMD price factor bps: 10319
+  net ETH exit cost excluding gas/MEV: 216917076366719312
+  gross ETH capital: 100000000000000000000
+  IMD acquired: 30384769616332688108674
+  active virtual ETH after buy: 634562621123443794224
+  IMD price factor bps: 13561
+  net ETH exit cost excluding gas/MEV: 2036410900970409396
+  gross ETH capital: 500000000000000000000
+  IMD acquired: 94928452725971299854784
+  active virtual ETH after buy: 1520668241706395822895
+  IMD price factor bps: 31590
+  net ETH exit cost excluding gas/MEV: 8433032319872434221
+  gross ETH capital: 1000000000000000000000
+  IMD acquired: 135051069496707854812408
+  active virtual ETH after buy: 1087038740138774165616
+  IMD price factor bps: 72425
+  net ETH exit cost excluding gas/MEV: 15178148647061205953
+  gross ETH capital: 10000000000000000000000
+  IMD acquired: 182433455626892846599527
+  active virtual ETH after buy: 9944209752937339545834
+  IMD price factor bps: 6314628
+  net ETH exit cost excluding gas/MEV: 115570886656571945929
+
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 24.35s (41.65s CPU time)
+
+Ran 1 test suite in 24.35s (24.35s CPU time): 2 tests passed, 0 failed, 0 skipped (2 total tests)

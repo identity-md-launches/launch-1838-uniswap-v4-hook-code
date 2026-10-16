@@ -1,3 +1,5 @@
+> Final-change status (2026-10-16): **pending independent review** for the one-block maturity rule, WalletExecutor, StateProof/BlockState, ImdV4UsdSource and their integration. The independent H-01 finding below remains High and blocking. The new author tests and fork measurements are not an independent assessment and do not downgrade it. See [current review scope](revision/READINESS.md).
+
 # Independent adversarial review
 
 Status: **High finding confirmed; release blocked.** Code-only review, 2026-10-16.

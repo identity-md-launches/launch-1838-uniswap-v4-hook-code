@@ -1,3 +1,5 @@
+> Revision notice (2026-10-16): the historical report below describes the previous mainnet delivery. Current implementation, evidence and limits are in [revision/ORACLE.md](revision/ORACLE.md). The inactive v3 reader is no longer admitted; buy-credit maturity is now explicit. Historical results are not final-source certification.
+
 # Actual pricing evidence and remaining safety work
 
 **No reliable production IMD/USD source is certified. Release is blocked.** No IMD/USD Chainlink feed is assumed. `UnlkImdOracle.fdvUsd()` computes fixed 1B UNLK supply × 2h UNLK/IMD TWAP × `ImdUsdSource.priceUsd()`, all normalized to 18-decimal USD. Both tokens are verified 18 decimals. The source takes no UNLK pool or token, preventing circular UNLK-derived IMD pricing.

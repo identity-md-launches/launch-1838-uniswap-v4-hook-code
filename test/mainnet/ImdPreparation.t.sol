@@ -4,6 +4,7 @@ import {UnlkImdHook} from "../../src/mainnet/UnlkImdHook.sol";
 import {ImdFixture} from "./ImdFixture.sol";
 import {MockImdMarket} from "./MockImdMarket.sol";
 import {PrepareImd} from "../../script/mainnet/PrepareImd.s.sol";
+import {ImdV4UsdSource} from "../../src/mainnet/ImdV4UsdSource.sol";
 import {ImdUsdSource, IV3OraclePool} from "../../src/mainnet/ImdUsdSource.sol";
 import {IImdUsdSource} from "../../src/mainnet/UnlkImdOracle.sol";
 import {MainnetPins} from "../../src/mainnet/MainnetPins.sol";
@@ -18,9 +19,7 @@ contract ImdPreparationTest is ImdFixture {
     function testChangedImdRuntimeOrWrongChainCannotStage() public {
         market = new MockImdMarket();
         vm.prank(owner);
-        address source = hook.deployPriceSource(
-            type(ImdUsdSource).creationCode, abi.encode(market, address(market).codehash, uint128(1e18))
-        );
+        address source = hook.deployPriceSource(type(ImdV4UsdSource).creationCode, bytes(""));
         uint256 snapshot = vm.snapshotState();
         uint64 staging = hook.stagings();
         vm.etch(MainnetPins.IMD_ADDRESS, hex"00");
@@ -51,12 +50,15 @@ contract ImdPreparationTest is ImdFixture {
             abi.encode(address(market))
         );
         _freshFeed();
-        bytes memory sourceCall =
-            script.preparePriceSource(IV3OraclePool(address(market)), address(market).codehash, 1e18);
+        bytes memory sourceCall = script.preparePriceSource();
         vm.prank(owner);
         (bool ok, bytes memory result) = address(hook).call(sourceCall);
         assertTrue(ok);
         priceSource = ImdUsdSource(abi.decode(result, (address)));
+        // This staged-source success rehearsal is explicitly synthetic. Proof activation failure is tested separately.
+        ImdUsdSource synthetic =
+            new ImdUsdSource(IV3OraclePool(address(market)), address(market).codehash, uint128(1e18));
+        vm.mockFunction(address(priceSource), address(synthetic), abi.encodeWithSignature("priceUsd()"));
         address[] memory recipients = new address[](1);
         recipients[0] = alice;
         uint256[] memory amounts = new uint256[](1);

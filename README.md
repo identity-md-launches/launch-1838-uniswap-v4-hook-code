@@ -1,42 +1,34 @@
-# UNLOCK / UNLK — candidate source, release blocked
+# UNLOCK / UNLK — mainnet source candidate, release blocked
 
-This repository preserves the sealed UNLOCK contracts and live frontend from commit `92e55dfe1d4b5863ceed2f744f4279942375fe65`, and adds an **undeployed candidate** with a fixed 75 bps native-ETH NFT treasury fee, sixteen unlocking thresholds, a fixed-beneficiary vault, and frontend source. No transaction was broadcast and no website was published.
+This continues `18062fc08c2fc3ab47b79316c1d1dea701e36e7f`. It preserves the live launch1560 contracts/configuration and prior candidate history. No public transaction, deployment, token replacement or site publication was performed. Candidate writes remain disabled and the NFT gallery stays read-only.
 
-**Standard Universal Router compatibility is not solved.** At Sepolia block 11918468, the real router executes `0x10 / 0x060c0f` and `0x10 / 0x060c0e` with identical hook observations but different token recipients. Permit2 funding and router prefunding also produce identical observations with different actual sources. Crediting `msgSender()` would silently change the requested accounting. The candidate therefore rejects unauthenticated routes. Its experimental companion router is a testable fee/accounting implementation, not an accepted substitute for standard Uniswap compatibility. See the [counterexample and required design decision](docs/candidate/COMPATIBILITY.md).
+The mainnet target remains IMD `univ4_hook`, 1B UNLK / 18 decimals, 10/87/3 allocation, standard Universal Router compatibility, official 1.25% fee plus 75 bps in IMD to the fixed beneficiary, protected seed principal and the existing sixteen sequential USD tiers with permanent final bypass.
 
-The useful independent work is implemented and tested:
+This revision implements:
 
-- `src/candidate/`: ETH fee accounting, four swap modes, fresh-manager claim settlement, immutable vault, sixteen tiers, authenticated setup and bytecode pins. The original `src/` contracts are unchanged.
-- `test/candidate/` and `test/compatibility/`: unit, fuzz, invariant, recorded-runtime and route-ambiguity tests. `rehearsal/candidate/` adds public, read-only Sepolia fork tests.
-- `web/src/`: preserved English live interface plus an undeployed candidate preview, verified ledger reader, fee calculator, and paginated mainnet treasury NFT gallery. Live rules retain the original 25% start, seven rates and no NFT hook fee.
-- `dist-candidate/`: reproducible candidate frontend output. The original `dist/` is preserved.
-- [Economics and operational rules](docs/candidate/ECONOMICS.md), [setup and deployment handoff](docs/candidate/DEPLOYMENT.md), [validation](docs/candidate/VALIDATION.md), [security review status](docs/candidate/SECURITY_REVIEW.md), [ABIs and artifact hashes](docs/candidate/ARTIFACTS.json), and [candidate manifest](docs/candidate/release-plan.json).
+- One-block maturity for new buy credit across every router call/UI, without redefining cumulative E or transferring rights. Claims/payer credits and ordinary transfers remain independent.
+- An optional immutable wallet-scoped executor that uses the standard router, pulls only from its authenticated caller, fixes settlement to that wallet and retains its own separate E/S ledger. Direct wallets and legitimate smart accounts still trade normally.
+- A noncircular IMD/USD source that authenticates every consecutive block's v4 price/depth using Ethereum headers and account/storage proofs, then composes 2h/24h history with Chainlink ETH/USD. The inactive v3 reader is no longer admitted as the production source.
+- Regression, fuzz, invariant and actual recorded-mainnet tests, a disabled preview, unsigned oracle/stage2 preparation and an updated release handoff.
 
-## Reproduce locally without network
+**H-01 remains High:** mature rights at a shared executor can still be consumed by another user supplying their own tokens. The on-chain reductions do not resolve global beneficial-user identity. **Oracle release is also blocked:** the observed market fails the depth screen, full real history is absent, and sustained manipulation cost is not independently established. Final changes are pending independent review.
 
-The compiler remains pinned to Solidity 0.8.26, Cancun, optimizer 200. Solidity libraries and the frontend build/typechecking dependencies are ordinary vendored files. Foundry, its pinned compiler, Python 3 and Node must already be available; no install is needed by these commands. No FFI or filesystem cheatcode access is enabled.
+Read the [readiness matrix and exact blockers](docs/mainnet/revision/READINESS.md), [H-01 proof and reductions](docs/mainnet/revision/H-01.md), [oracle evidence, interval proof and economics](docs/mainnet/revision/ORACLE.md), and [two-stage deployment/postflight specification](docs/mainnet/DEPLOYMENT.md). The [release plan](docs/mainnet/release-plan.json) is a source handoff, not a launch manifest. The existing root launch manifest describes the historical project.
+
+Build and verify offline with the unchanged pinned Solidity 0.8.26 configuration:
 
 ```sh
 forge build
-forge test --fuzz-seed 0x1fb1bda21a2a44ee9da3a358da09a0668c5135bb35baa2d687f3bfba01fc2fde
+forge test --fuzz-seed 0x1d49232a44ff2493b73de50672c825b51c99d7c5f9f966576d2050bd2684d532
 forge fmt --check
-bash scripts/candidate/check.sh
+python3 scripts/mainnet/artifacts.py --check
+node web/scripts/typecheck-offline.mjs
+node web/scripts/build-offline.mjs --test
+(cd web && node --test ../test/scratch/frontend/*.test.mjs)
 ```
 
-For the separate, network-dependent historical fork reproduction:
+Network-dependent local rehearsal: `bash scripts/mainnet/fork.sh [RPC_URL]`. The public evidence source is `https://ethereum-rpc.publicnode.com`; no script signs or broadcasts. A read-only proxy transport may be needed on a sandboxed worker. Full oracle behavior tests are synthetic; actual mainnet proof and venue evidence are identified separately.
 
-```sh
-bash scripts/candidate/fork.sh
-```
+The task prohibits touching `.git/`, so this worker does not create or push a commit. The contributor upload step must publish the ordinary changed files and record that exact commit before final review. No commit or deployment success is fabricated. [Provenance](docs/mainnet/revision/PROVENANCE.json) records the public HEAD observed at the requested base.
 
-It uses `https://ethereum-sepolia-rpc.publicnode.com` at block 11918468 and never signs or broadcasts. Default tests remain offline. See [toolchain provenance](web/vendor/README.md).
-
-The [upload-size repair](docs/candidate/BUNDLE_SIZE.md) retains both frontend exports and all application/contract sources. Compiler payloads restore automatically from verified, lossless compressed files; no network or existing scratch cache is needed. `python3 scripts/candidate/bundle-size.py` checks a full-source archive against the 8 MiB limit.
-
-## Release boundaries
-
-Release is blocked by the standard-router attribution design and pending independent adversarial review. Critical/high findings block release. The candidate deployment config is intentionally absent, not a dummy address. Future keys or addresses are not needed to build this source. New deployment and website publication are separate, later authorizations after the blocker is resolved and the exact artifacts are reviewed.
-
-No GitHub commit was created: this assignment forbids touching `.git/`. The contributor upload/commit step must commit these ordinary files; no commit identifier is invented here. Source provenance and preserved-file hashes are in [docs/provenance](docs/provenance/source.json). The public repository HEAD observed on 2026-10-15 was the requested commit; its accepted fixes were retained. No newer public accepted commit was found.
-
-The root `launch.json`, `RELEASE_STATUS.json`, `DELIVERY.md`, pre-existing `docs/` reports and archived [pinned README](docs/provenance/README.pinned.md) describe the historical release, **not this candidate**. Do not use their approval or address statements as candidate release authorization. Candidate reports are under `docs/candidate/`.
+Earlier generations remain under [docs/candidate](docs/candidate/), [docs/successor](docs/successor/) and the historical reports in [docs/mainnet](docs/mainnet/). The previous root README is retained [here](docs/mainnet/revision/README.pre-revision.md). Historical approvals/check logs do not approve this revision.

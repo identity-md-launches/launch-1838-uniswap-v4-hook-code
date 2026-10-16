@@ -13,3 +13,11 @@ export interface CandidateDeployment {
 // High shared-executor finding and oracle evidence block release. No candidate write path exists.
 export const CANDIDATE_DEPLOYMENT: CandidateDeployment | null = null;
 export const mainnetClient = createPublicClient({transport:http("https://ethereum-rpc.publicnode.com")});
+
+/** E remains cumulative acquisitions. Only matured buy credit contributes to current quota. */
+export function verifiedMatureQuota(E: bigint, matureE: bigint, S: bigint, p: bigint, full: boolean): bigint {
+  if (E < 0n || matureE < 0n || matureE > E || S < 0n || p < 2000n || p > 10000n) throw new Error("Invalid candidate ledger");
+  if (full) return (1n << 256n) - 1n;
+  const cap = matureE * p / 10000n;
+  return cap > S ? cap - S : 0n;
+}

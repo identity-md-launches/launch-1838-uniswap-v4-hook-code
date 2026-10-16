@@ -1,6 +1,7 @@
 import { keccak256, parseAbi, type Address, type PublicClient } from "viem";
 import { IMD, IMD_CODEHASH, POOL_MANAGER, NFT_BENEFICIARY, NEXT_RATES, SUCCESSOR_FLAGS, UNIVERSAL_ROUTER, UNIVERSAL_ROUTER_CODEHASH, type CandidateDeployment } from "./mainnet";
 import { candidateQuota } from "./candidate";
+import { verifiedMatureQuota } from "./mainnet";
 
 const hookAbi = parseAbi([
   "function activated() view returns (bool)", "function token() view returns (address)",
@@ -10,6 +11,7 @@ const hookAbi = parseAbi([
   "function FEE() view returns (uint24)", "function FLAGS() view returns (uint160)",
   "function p() view returns (uint16)", "function tier() view returns (uint8)",
   "function fullyUnlocked() view returns (bool)", "function eligible(address) view returns (uint256)",
+  "function spendableEligible(address) view returns (uint256)",
   "function sold(address) view returns (uint256)", "function remainingQuota(address) view returns (uint256)",
 ]);
 const vaultAbi = parseAbi([
@@ -25,7 +27,7 @@ const oracleAbi = parseAbi(["function fdvUsd() view returns (uint256)"]);
 export interface CandidateSnapshot {
   block: bigint; readAt: number; p: number; tier: number; fullyUnlocked: boolean;
   fdv: bigint | null; oracleError: string | null;
-  wallet: {address:Address; balance:bigint; E:bigint; S:bigint; quota:bigint; sellable:bigint; imdBalance:bigint; imdApproval:bigint; permit2Allowance:bigint; permit2Expiration:number} | null;
+  wallet: {address:Address; balance:bigint; E:bigint; matureE:bigint; immatureE:bigint; S:bigint; quota:bigint; sellable:bigint; imdBalance:bigint; imdApproval:bigint; permit2Allowance:bigint; permit2Expiration:number} | null;
   vault: {accrued:bigint; withdrawn:bigint; redeemed:bigint; claimable:bigint; pendingClaims:bigint; donations:bigint; donationsWithdrawn:bigint; unlkBalance:bigint};
 }
 
@@ -63,12 +65,11 @@ export async function readMainnetCandidate(deployment: CandidateDeployment | nul
   const unlkBalance=await client.readContract({address:deployment.token,abi:tokenAbi,functionName:"balanceOf",args:[deployment.vault],blockNumber:block}) as bigint;
   let personal: CandidateSnapshot["wallet"]=null;
   if (wallet) {
-    const [balance,E,S,quota]=await Promise.all([
+    const [balance,E,matureE,S,quota]=await Promise.all([
       client.readContract({address:deployment.token,abi:tokenAbi,functionName:"balanceOf",args:[wallet],blockNumber:block}),
-      hookRead("eligible",[wallet]),hookRead("sold",[wallet]),hookRead("remainingQuota",[wallet]),
+      hookRead("eligible",[wallet]),hookRead("spendableEligible",[wallet]),hookRead("sold",[wallet]),hookRead("remainingQuota",[wallet]),
     ]) as bigint[];
-    const cap=E*BigInt(Number(p))/10000n;
-    const expectedQuota=fullyUnlocked ? (1n<<256n)-1n : cap>S ? cap-S : 0n;
+    const expectedQuota=verifiedMatureQuota(E,matureE,S,BigInt(Number(p)),Boolean(fullyUnlocked));
     if (quota!==expectedQuota) throw new Error("Candidate quota does not match its ledger");
     const [imdBalance,imdApproval]=await Promise.all([
       client.readContract({address:IMD,abi:quoteAbi,functionName:"balanceOf",args:[wallet],blockNumber:block}),
@@ -76,11 +77,11 @@ export async function readMainnetCandidate(deployment: CandidateDeployment | nul
     const [permit2Allowance,permit2Expiration]=await client.readContract({address:"0x000000000022D473030F116dDEE9F6B43aC78BA3",
       abi:parseAbi(["function allowance(address,address,address) view returns (uint160,uint48,uint48)"]),
       functionName:"allowance",args:[wallet,IMD,UNIVERSAL_ROUTER],blockNumber:block});
-    personal={address:wallet,balance,E,S,quota,imdBalance,imdApproval,permit2Allowance,permit2Expiration,sellable:candidateQuota(balance,E,S,BigInt(Number(p)),Boolean(fullyUnlocked))};
+    personal={address:wallet,balance,E,matureE,immatureE:E-matureE,S,quota,imdBalance,imdApproval,permit2Allowance,permit2Expiration,sellable:candidateQuota(balance,matureE,S,BigInt(Number(p)),Boolean(fullyUnlocked))};
   }
   let fdv: bigint | null=null; let oracleError: string | null=null;
   try { fdv=await client.readContract({address:oracle as Address,abi:oracleAbi,functionName:"fdvUsd",blockNumber:block}); }
-  catch { oracleError="Verified FDV unavailable: oracle freshness, depth or warm-up requirements are not met."; }
+  catch { oracleError="Verified FDV unavailable: authenticated block history, freshness, depth or warm-up requirements are not met."; }
   return {block,readAt:Date.now(),p:Number(p),tier:Number(tier),fullyUnlocked:Boolean(fullyUnlocked),fdv,oracleError,wallet:personal,
     vault:{accrued,withdrawn,redeemed,claimable,pendingClaims,donations,donationsWithdrawn,unlkBalance}};
 }

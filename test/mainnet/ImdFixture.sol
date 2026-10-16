@@ -19,6 +19,7 @@ import {Hooks} from "v4-core/src/libraries/Hooks.sol";
 import {UnlkImdHook} from "../../src/mainnet/UnlkImdHook.sol";
 import {MainnetRuntime} from "./MainnetRuntime.sol";
 import {MainnetPins} from "../../src/mainnet/MainnetPins.sol";
+import {ImdV4UsdSource} from "../../src/mainnet/ImdV4UsdSource.sol";
 import {ImdUsdSource, IV3OraclePool} from "../../src/mainnet/ImdUsdSource.sol";
 import {IImdUsdSource} from "../../src/mainnet/UnlkImdOracle.sol";
 import {MockImdMarket} from "./MockImdMarket.sol";
@@ -173,9 +174,12 @@ abstract contract ImdFixture is Test {
         );
         _freshFeed();
         vm.prank(owner);
-        address source = hook.deployPriceSource(
-            type(ImdUsdSource).creationCode, abi.encode(market, address(market).codehash, uint128(1e18))
-        );
+        address source = hook.deployPriceSource(type(ImdV4UsdSource).creationCode, bytes(""));
+        // SYNTHETIC oracle only: redirect priceUsd to the historical v3 mock adapter. No proof/history
+        // safety is claimed by these router/economics fixtures. V4 proof tests never use this redirection.
+        ImdUsdSource synthetic =
+            new ImdUsdSource(IV3OraclePool(address(market)), address(market).codehash, uint128(1e18));
+        vm.mockFunction(source, address(synthetic), abi.encodeWithSignature("priceUsd()"));
         priceSource = ImdUsdSource(source);
         _advance(24 hours);
         vm.prank(owner);
@@ -400,6 +404,8 @@ abstract contract ImdFixture is Test {
         _approveRouter(who);
         _execute(who, hex"10", _explorerPlan(true, amount, 1), 0);
         output = token.balanceOf(who) - before;
+        // Helpers represent separately mined trades; same-block adversarial tests use _execute directly.
+        vm.roll(block.number + 1);
     }
 
     function _sell(address who, uint256 amount) internal returns (uint256 output) {
@@ -422,6 +428,7 @@ abstract contract ImdFixture is Test {
             _approveRouter(who);
         }
         _execute(who, hex"10", inputs, 0);
+        if (buy) vm.roll(block.number + 1);
     }
 
     function _expectHookRevert(bytes4 callback, bytes4 err) internal {

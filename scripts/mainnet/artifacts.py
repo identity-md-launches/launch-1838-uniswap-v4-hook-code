@@ -6,7 +6,7 @@ The second pass resolves verifier -> token commitment without weakening any prot
 import json, pathlib, subprocess, sys
 root = pathlib.Path(__file__).resolve().parents[2]
 names = {'TOKEN':'UnlkToken','EVIDENCE':'MerkleClaimEvidence','ORACLE':'UnlkImdOracle',
-         'VAULT':'ImdFeeVault','VERIFIER':'ImdSetupVerifier','PRICE_SOURCE':'ImdUsdSource'}
+         'VAULT':'ImdFeeVault','VERIFIER':'ImdSetupVerifier','PRICE_SOURCE':'ImdV4UsdSource'}
 def artifact(name):
     return json.loads((root/'out'/f'{name}.sol'/f'{name}.json').read_text())
 def digest(code):
@@ -22,7 +22,7 @@ if '--write' in sys.argv:
 else:
     assert p.read_text() == s, 'Creation commitments stale; rebuild and regenerate after review'
     output = {}
-    for name in [*names.values(), 'UnlkImdHook']:
+    for name in [*names.values(), 'UnlkImdHook', 'WalletExecutor']:
         a=artifact(name); creation=a['bytecode']['object']; runtime=a['deployedBytecode']['object']
         size=(len(runtime)-2)//2
         assert size <= 24576, (name,size,'EIP-170')
@@ -38,7 +38,7 @@ else:
                       'immutableReferences':a['deployedBytecode'].get('immutableReferences',{})}
         folder=root/'docs/mainnet/abi';folder.mkdir(exist_ok=True)
         (folder/f'{name}.json').write_text(json.dumps(a['abi'],indent=2)+'\n')
-        folder=root/'docs/mainnet/artifacts';folder.mkdir(exist_ok=True)
+        folder=root/'test/scratch/mainnet-artifacts';folder.mkdir(parents=True,exist_ok=True)
         (folder/f'{name}.json').write_text(json.dumps({'abi':a['abi'],'bytecode':a['bytecode'],'runtime':output[name]},indent=2)+'\n')
     (root/'docs/mainnet/ARTIFACTS.json').write_text(json.dumps(output,indent=2)+'\n')
     print('Creation commitments, link references, EIP-170/EIP-3860 sizes verified; artifacts exported.')

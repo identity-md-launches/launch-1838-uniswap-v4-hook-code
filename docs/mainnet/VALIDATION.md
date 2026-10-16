@@ -1,3 +1,5 @@
+> Revision notice (2026-10-16): the historical report below describes the previous mainnet delivery. Current implementation, evidence and limits are in [revision/READINESS.md](revision/READINESS.md). The inactive v3 reader is no longer admitted; buy-credit maturity is now explicit. Historical results are not final-source certification.
+
 # Validation and compatibility
 
 Author checks provide evidence, not independent audit authority. Compiler/build configuration and dependencies are unchanged. All swap/fee test quantities are raw18-decimal IMD/UNLK units unless otherwise stated. The supplied fuzz seed is `0xb992aebca039448ceb6aa325da16f06612255d105e125a5a7451b3928ec69e6e`; offline property fuzzing uses256 runs unless an existing test fixes a larger count. Fork property fuzzing uses32, with the same seed.

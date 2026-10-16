@@ -1,0 +1,1 @@
+Browser checks SKIPPED: ERR_MODULE_NOT_FOUND (playwright unavailable). No browser assertions executed.

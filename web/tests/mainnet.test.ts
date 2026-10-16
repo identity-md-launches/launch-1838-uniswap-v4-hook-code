@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { decodeAbiParameters, decodeFunctionData, parseAbi, parseAbiParameters, type Address } from "viem";
 import { encodeImdSwap, requireMainnetRelease } from "../src/mainnetSwap";
-import { IMD, UNIVERSAL_ROUTER, CANDIDATE_DEPLOYMENT, successorFee } from "../src/mainnet";
+import { IMD, UNIVERSAL_ROUTER, CANDIDATE_DEPLOYMENT, successorFee, verifiedMatureQuota } from "../src/mainnet";
 test("mainnet writes remain blocked; no Sepolia route or native funding in unsigned plans",()=>{
   assert.equal(CANDIDATE_DEPLOYMENT,null);assert.throws(requireMainnetRelease,/disabled/);
   const hook="0x1111111111111111111111111111111111111111" as Address;
@@ -27,4 +27,12 @@ test("IMD treasury budgets preserve raw-unit conservation and conservative round
     const b=successorFee("buyExactIn",amount);assert.equal(b.poolLeg+b.fee,amount);
     const s=successorFee("sellExactOut",amount);assert.equal(s.poolLeg-s.fee,amount);
   }
+});
+
+test("mature quota never counts this block's buys and final bypass remains permanent",()=>{
+  assert.equal(verifiedMatureQuota(200n,100n,10n,2000n,false),10n);
+  assert.equal(verifiedMatureQuota(200n,200n,10n,2000n,false),30n);
+  assert.equal(verifiedMatureQuota(200n,0n,10n,2000n,false),0n);
+  assert.equal(verifiedMatureQuota(0n,0n,100n,10000n,true),(1n<<256n)-1n);
+  assert.throws(()=>verifiedMatureQuota(100n,101n,0n,2000n,false),/ledger/);
 });

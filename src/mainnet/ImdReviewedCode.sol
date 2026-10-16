@@ -9,5 +9,5 @@ library ImdReviewedCode {
     bytes32 internal constant VAULT = 0x545f07cb05390eb2448a33bdb834922490ce1943711ad9c00b5a64334d784526;
     bytes32 internal constant VERIFIER = 0xc4371041dde369148c36abba9e99ee1da4d5d04fefc1f94eceff9b43e87da825;
     bytes32 internal constant PRICE_SOURCE =
-        0x1b0e2385f02578597e6d729a571419c87f3572d03cc7d35f119aa8a8ca9020fc;
+        0x491923a78651b19d12ee6726ce52944f9483c48cdd792b865bc141bf7424c201;
 }
