@@ -163,7 +163,7 @@ abstract contract ImdFixture is Test {
         vm.deal(bob, 10_000 ether);
     }
 
-    function _deployCompanions() internal {
+    function _deployCompanions() internal virtual {
         market = new MockImdMarket();
         vm.mockCall(
             priceFactory(),
@@ -353,11 +353,11 @@ abstract contract ImdFixture is Test {
         vm.stopPrank();
     }
 
-    function _claimReward() internal {
+    function _claimReward() internal virtual {
         distributor.claim(0, alice, REWARD, new bytes32[](0));
     }
 
-    function _attestReward() internal returns (uint256) {
+    function _attestReward() internal virtual returns (uint256) {
         return rewards.attest(0, alice, REWARD, new bytes32[](0));
     }
 
@@ -460,19 +460,12 @@ abstract contract ImdFixture is Test {
     }
 
     function _confirm() internal {
-        _advance(oracle.WINDOW());
-        hook.updateMilestone();
-        uint256 duration = hook.tier() == 15 ? hook.FINAL_CONFIRMATION() : hook.CONFIRMATION();
-        for (uint256 i; i < duration / 5 minutes; ++i) {
-            _advance(5 minutes);
-            hook.updateMilestone();
-        }
+        hook.checkpoint();
     }
 
     function _fullyConfirm() internal {
-        for (uint256 i; i < 16; ++i) {
-            _confirm();
-        }
+        hook.checkpoint();
+        assertTrue(hook.fullyUnlocked(), "current valid spot must touch final threshold");
     }
 
     function priceFactory() internal pure returns (address) {

@@ -1,1 +1,3 @@
-PASS: 2071 baseline files unchanged, including compiler/remappings/dependencies, historical/sealed source, historical dist, live configuration/trading/gallery and protected checker sources. Git/GitHub/environment files were not read or modified. Two prior mainnet Sourcify JSON records and historical Sepolia router verification JSON preserved losslessly in XZ with original hashes. No public transactions or site publication.
+Historical record archived byte-for-byte: docs/unlock-gates/historical-checks.tar.xz
+Original member: docs/mainnet/revision/preservation.txt
+Hashes and recovery: docs/unlock-gates/ARCHIVES.md and historical-checks.json

@@ -8,18 +8,8 @@ import {MainnetPins} from "../../src/mainnet/MainnetPins.sol";
 contract ImdOracleTest is ImdFixture {
     function testFullMilestoneLadderReachableAndFeeContinuesAfterPermanentBypass() public {
         uint256 out = _buy(alice, 200000 ether);
-        _advance(2 hours);
-        hook.updateMilestone();
         assertGe(oracle.fdvUsd(), hook.tierThreshold(15));
-        for (uint8 t; t < 16; t++) {
-            uint256 duration = t == 15 ? 24 hours : 6 hours;
-            for (uint256 j; j < duration / 5 minutes; j++) {
-                _advance(5 minutes);
-                hook.updateMilestone();
-            }
-            assertEq(hook.tier(), t + 1);
-            assertEq(hook.p(), 2500 + uint16(t) * 500);
-        }
+        assertEq(hook.tier(), 16, "one executed buy opens all crossed gates immediately");
         assertTrue(hook.fullyUnlocked());
         vm.prank(alice);
         token.transfer(bob, out / 2);
@@ -33,24 +23,19 @@ contract ImdOracleTest is ImdFixture {
         assertEq(hook.p(), 10000);
     }
 
-    function testUnlkTwapWarmupAndFeedOutageDoNotAdvanceOrRevoke() public {
-        vm.expectRevert(UnlkImdOracle.InvalidOracle.selector);
-        oracle.fdvUsd();
+    function testNoUnlkWarmupAndFeedOutageDoesNotAdvanceOrRevoke() public {
+        assertGt(oracle.fdvUsd(), 0, "no UNLK warmup needed with an already valid reference");
         _buy(alice, 10000 ether);
-        _advance(2 hours);
-        hook.updateMilestone();
-        uint64 since = hook.qualifyingSince(0);
-        assertGt(since, 0);
-        uint64 last = hook.lastConfirmation();
+        uint8 oldTier = hook.tier();
         uint16 oldP = hook.p();
+        assertGt(oldTier, 0);
         market.setOutage(true);
         _advance(5 minutes);
         assertFalse(hook.updateMilestone());
-        assertEq(hook.lastConfirmation(), last);
-        assertEq(hook.qualifyingSince(0), since);
+        assertEq(hook.tier(), oldTier);
         assertEq(hook.p(), oldP);
-        // Trading remains possible; only price-based progression is isolated.
         assertGt(_buy(bob, 1 ether), 0);
+        assertGt(_sell(alice, hook.remainingQuota(alice) / 10), 0);
     }
 
     function testCompositeAdapterWarmupDepthFreshnessAndRealDepeg() public {

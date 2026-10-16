@@ -1,3 +1,5 @@
+> Current revision (2026-10-16): Current one-way gate design and accounting are in [../unlock-gates/DESIGN.md](../unlock-gates/DESIGN.md). The historical UNLK TWAP/sequential confirmation rules below are superseded.
+
 > Revision notice (2026-10-16): the historical report below describes the previous mainnet delivery. Current implementation, evidence and limits are in [revision/H-01.md](revision/H-01.md). The inactive v3 reader is no longer admitted; buy-credit maturity is now explicit. Historical results are not final-source certification.
 
 # Ethereum UNLK/IMD candidate — blocked, undeployed

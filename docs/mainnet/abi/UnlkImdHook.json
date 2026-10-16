@@ -27,19 +27,6 @@
   },
   {
     "type": "function",
-    "name": "CONFIRMATION",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
     "name": "FEE",
     "inputs": [],
     "outputs": [
@@ -53,19 +40,6 @@
   },
   {
     "type": "function",
-    "name": "FINAL_CONFIRMATION",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
     "name": "FLAGS",
     "inputs": [],
     "outputs": [
@@ -73,32 +47,6 @@
         "name": "",
         "type": "uint160",
         "internalType": "uint160"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "MAX_CONFIRMATION_GAP",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "MIN_CONFIRMATION_INTERVAL",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -119,32 +67,6 @@
   {
     "type": "function",
     "name": "MIN_SEED_QUOTE_CAPACITY",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "ORACLE_MAX_CHECKPOINT_AGE",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "ORACLE_MAX_FEED_AGE",
     "inputs": [],
     "outputs": [
       {
@@ -1067,6 +989,19 @@
   },
   {
     "type": "function",
+    "name": "checkpoint",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "claimedCredit",
     "inputs": [
       {
@@ -1308,19 +1243,6 @@
   },
   {
     "type": "function",
-    "name": "lastConfirmation",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint64",
-        "internalType": "uint64"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
     "name": "launchFactory",
     "inputs": [],
     "outputs": [
@@ -1509,25 +1431,6 @@
         "name": "",
         "type": "address",
         "internalType": "contract IPoolManager"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "qualifyingSince",
-    "inputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint64",
-        "internalType": "uint64"
       }
     ],
     "stateMutability": "view"

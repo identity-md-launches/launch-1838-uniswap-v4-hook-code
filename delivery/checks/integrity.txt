@@ -1,12 +1,3 @@
-PASS: 498 original files and modes reconstruct published Git tree 0710257dd00656d130b4c56b7a669734955bb1ef
-PASS: UnlkToken: body 3444, full initcode 3444, runtime 2320
-PASS: UnlkHook: body 25702, full initcode 25830, runtime 24328
-PASS: UnlkSwapRouter: body 8102, full initcode 8166, runtime 7761
-PASS: MerkleClaimEvidence: body 5943, full initcode 6007, runtime 5675
-PASS: UnlkOracle: body 7857, full initcode 7953, runtime 7517
-PASS: HookDeployer: body 756, full initcode 756, runtime 728
-PASS: unchanged univ4_hook manifest, six release artifacts, ABI/code hashes and EVM sizes
-PASS: canonical platform compilation: LaunchFactory
-PASS: canonical platform compilation: LaunchFees
-PASS: canonical platform compilation: LaunchRegistry
-PASS: canonical platform compilation: MerkleDistributor
+Historical record archived byte-for-byte: docs/unlock-gates/historical-checks.tar.xz
+Original member: delivery/checks/integrity.txt
+Hashes and recovery: docs/unlock-gates/ARCHIVES.md and historical-checks.json

@@ -1,2 +1,3 @@
-PASS: 605 files unchanged: contracts, tests, Solidity dependencies, app source/assets, both frontend exports and Foundry configuration/manifest.
-PASS: 15 sealed-source provenance hashes match the requested commit.
+Historical record archived byte-for-byte: docs/unlock-gates/historical-checks.tar.xz
+Original member: docs/candidate/size-repair-preservation.txt
+Hashes and recovery: docs/unlock-gates/ARCHIVES.md and historical-checks.json

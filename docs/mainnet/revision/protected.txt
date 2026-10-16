@@ -1,2 +1,3 @@
-Protected harness files supplied: 0
-SKIPPED: no protected admission harness supplied in this task. Existing checker sources preserved unchanged. No protected-check pass claimed.
+Historical record archived byte-for-byte: docs/unlock-gates/historical-checks.tar.xz
+Original member: docs/mainnet/revision/protected.txt
+Hashes and recovery: docs/unlock-gates/ARCHIVES.md and historical-checks.json

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Export ABIs from forge build artifacts using only Python's standard library."""
+import lzma
 import json
 from pathlib import Path
 
@@ -27,7 +28,7 @@ for name, source in CONTRACTS.items():
     target = ROOT / "docs" / "abi" / (name + ".json")
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(artifact["abi"], indent=2) + "\n")
-verified = json.loads((ROOT / "docs/network/factory-artifacts.json").read_text())
+verified = json.loads(lzma.decompress((ROOT / "docs/network/factory-artifacts.json.xz").read_bytes()))
 for name, artifact in verified.items():
     (ROOT / "docs/abi" / (name + ".json")).write_text(json.dumps(artifact["abi"], indent=2) + "\n")
 print(f"Exported {len(CONTRACTS) + len(verified)} ABIs, including the verified platform contracts")

@@ -1,1 +1,3 @@
-Browser checks SKIPPED: ERR_MODULE_NOT_FOUND (playwright unavailable). No browser assertions executed.
+Historical record archived byte-for-byte: docs/unlock-gates/historical-checks.tar.xz
+Original member: docs/mainnet/revision/browser.txt
+Hashes and recovery: docs/unlock-gates/ARCHIVES.md and historical-checks.json

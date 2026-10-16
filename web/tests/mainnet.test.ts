@@ -1,4 +1,5 @@
 import test from "node:test";
+import fs from "node:fs";
 import assert from "node:assert/strict";
 import { decodeAbiParameters, decodeFunctionData, parseAbi, parseAbiParameters, type Address } from "viem";
 import { encodeImdSwap, requireMainnetRelease } from "../src/mainnetSwap";
@@ -35,4 +36,23 @@ test("mature quota never counts this block's buys and final bypass remains perma
   assert.equal(verifiedMatureQuota(200n,0n,10n,2000n,false),0n);
   assert.equal(verifiedMatureQuota(0n,0n,100n,10000n,true),(1n<<256n)-1n);
   assert.throws(()=>verifiedMatureQuota(100n,101n,0n,2000n,false),/ledger/);
+});
+
+test("1000/200/100 cumulative example never computes quota from remaining balance",()=>{
+  assert.equal(verifiedMatureQuota(1000n,1000n,0n,2000n,false),200n);
+  assert.equal(verifiedMatureQuota(1000n,1000n,200n,3000n,false),100n);
+  assert.equal(verifiedMatureQuota(1000n,1000n,300n,3000n,false),0n);
+  assert.equal(verifiedMatureQuota(1003n,1003n,200n,3000n,false),100n);
+  assert.equal(verifiedMatureQuota(1500n,1000n,300n,3000n,false),0n);
+  assert.equal(verifiedMatureQuota(1500n,1500n,300n,3000n,false),150n);
+});
+test("candidate copy explains one-way spot gates separately from the sampled reference",()=>{
+  const source=fs.readFileSync("src/NextRelease.tsx","utf8");
+  assert.match(source,/one-way unlock gates/);
+  assert.match(source,/A short-lived spike can open gates/);
+  assert.match(source,/transfer-only recipients with E=0/);
+  assert.match(source,/no UNLK TWAP/);
+  assert.match(source,/48h cold start/);
+  assert.match(source,/Someone must pay Ethereum gas/);
+  assert.doesNotMatch(source,/6h confirmation|24h · permanent|Sequential confirmations/);
 });

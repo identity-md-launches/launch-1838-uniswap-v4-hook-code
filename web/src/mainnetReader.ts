@@ -81,7 +81,7 @@ export async function readMainnetCandidate(deployment: CandidateDeployment | nul
   }
   let fdv: bigint | null=null; let oracleError: string | null=null;
   try { fdv=await client.readContract({address:oracle as Address,abi:oracleAbi,functionName:"fdvUsd",blockNumber:block}); }
-  catch { oracleError="Verified FDV unavailable: authenticated block history, freshness, depth or warm-up requirements are not met."; }
+  catch { oracleError="Gate FDV unavailable: official pool state or the separate sampled IMD/USD reference fails history, freshness, depth or warm-up checks. Existing gates remain open."; }
   return {block,readAt:Date.now(),p:Number(p),tier:Number(tier),fullyUnlocked:Boolean(fullyUnlocked),fdv,oracleError,wallet:personal,
     vault:{accrued,withdrawn,redeemed,claimable,pendingClaims,donations,donationsWithdrawn,unlkBalance}};
 }

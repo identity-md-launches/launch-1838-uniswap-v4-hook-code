@@ -2,6 +2,7 @@
 """Check saved Sepolia bytecode against verified source build outputs, without a network.
 With --rpc URL also re-read the exact recorded block. Foundry cast is the only dependency.
 """
+import lzma
 import json, pathlib, subprocess, sys
 root=pathlib.Path(__file__).resolve().parent.parent
 folder=root/'docs/network'
@@ -17,7 +18,7 @@ def matches(actual, expected, slots):
         for x in refs:
             i,n=x['start'],x['length'];actual[i:i+n]=expected[i:i+n]=bytes(n)
     return actual==expected
-artifacts=json.loads((folder/'factory-artifacts.json').read_text())
+artifacts=json.loads(lzma.decompress((folder/'factory-artifacts.json.xz').read_bytes()))
 for name, fact in data['contracts'].items():
     actual=bytes.fromhex((folder/(name+'.runtime.hex')).read_text().strip()[2:])
     assert digest(actual)==fact['codehash'],name+' saved bytecode hash mismatch'

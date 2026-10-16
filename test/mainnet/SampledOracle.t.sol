@@ -341,12 +341,15 @@ contract SampledOracleTest is Test {
         assertApproxEqRel(source.priceUsd(), expected, 1e14);
     }
 
-    /// Cross-pool: FDV = SUPPLY * (IMD per UNLK) * (USD per IMD). An attacker can split a required FDV factor across
-    /// the official hook-observed UNLK/IMD pool (end-of-block state, sustained) and the sampled IMD/ETH pool.
+    /// External-reference attack model, separate from accepted instantaneous UNLK spikes.
+    /// FDV factors multiply. The sampled IMD/ETH attack still needs these repeated observations; the official
+    /// UNLK/IMD leg now needs only an observed swap-boundary/current-state touch, not sustained/end-block state.
+    /// This model measures sampled-leg fees only, not a realizable production round trip or exit profit.
     function testCrossPoolFactorsMultiplyAndNetProfitModel() public {
         _warm(REAL_TICK);
         uint256 imdUsd = source.priceUsd();
-        // Suppose true FDV is $25M and the final $50M bypass needs 2x for the final 24h confirmation.
+        // Suppose true FDV is $25M. A 2x sampled reference can cause an immediate $50M bypass.
+        // The 27h below fills the unchanged external-reference windows; there is NO final gate delay.
         uint256 trueFdv = 25_000_000 ether;
         uint256 imdPerUnlk = trueFdv * 1e18 / SUPPLY * 1e18 / imdUsd;
         // Route A: 2x entirely on IMD/ETH (sampled leg).
@@ -356,8 +359,8 @@ contract SampledOracleTest is Test {
         // Route B: sqrt(2) on each leg: half the IMD/ETH displacement.
         (, uint256 fullLeg) = _flashCostEth(REAL_TICK, REAL_TICK - 6932, REAL_LIQUIDITY, FEE_PPM);
         (, uint256 halfLeg) = _flashCostEth(REAL_TICK, REAL_TICK - 3466, REAL_LIQUIDITY, FEE_PPM);
-        // The UNLK/IMD leg is sustained end-of-block state in the hook oracle; its cost depends on the not-yet-existing
-        // launch pool depth and is NOT measured here. Splitting only lowers the sampled-leg fee cost.
+        // Only an observed instantaneous UNLK/IMD touch is required by the clarified design. That accepted
+        // spot move's cost and exit slippage are NOT measured here. Splitting lowers sampled-leg fee cost.
         assertLt(halfLeg, fullLeg / 2 + 1, "IMD/ETH-leg cost is convex in displacement");
         console2.log("per-sample fee USD: full 2x leg / sqrt2 leg", _usd(fullLeg), _usd(halfLeg));
         // Net profit model at the final bypass: attacker holds 2% of supply with zero E; bypass lets all of it sell.

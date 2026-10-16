@@ -1,1 +1,3 @@
-launch.json passes the launch check against this build. Slither runs only on the verifier.
+Historical record archived byte-for-byte: docs/unlock-gates/historical-checks.tar.xz
+Original member: delivery/checks/imd-launch.txt
+Hashes and recovery: docs/unlock-gates/ARCHIVES.md and historical-checks.json

@@ -1,1 +1,3 @@
-Recorded 6 contract artifacts and 458 source/ABI digests
+Historical record archived byte-for-byte: docs/unlock-gates/historical-checks.tar.xz
+Original member: delivery/checks/artifact-export.txt
+Hashes and recovery: docs/unlock-gates/ARCHIVES.md and historical-checks.json

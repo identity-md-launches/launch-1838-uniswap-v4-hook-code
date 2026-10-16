@@ -1,3 +1,5 @@
+> Current revision (2026-10-16): Current final-source results and remaining release requirements are consolidated in [../unlock-gates/HANDOFF.md](../unlock-gates/HANDOFF.md). Counts, seeds and unsupported reference operations below describe historical deliveries.
+
 > Revision notice (2026-10-16): the historical report below describes the previous mainnet delivery. Current implementation, evidence and limits are in [revision/READINESS.md](revision/READINESS.md). The inactive v3 reader is no longer admitted; buy-credit maturity is now explicit. Historical results are not final-source certification.
 
 # Validation and compatibility

@@ -1,3 +1,5 @@
+> Current revision (2026-10-16): Current separate contributor review of final one-way gates, exact arithmetic and release tooling completed: [../unlock-gates/INDEPENDENT_REVIEW.md](../unlock-gates/INDEPENDENT_REVIEW.md). External audit/final-commit release approval remain pending. The historical H-01 finding below remains High and unwaived.
+
 > Final-change status (2026-10-16): **pending independent review** for the one-block maturity rule, WalletExecutor, StateProof/BlockState, ImdV4UsdSource and their integration. The independent H-01 finding below remains High and blocking. The new author tests and fork measurements are not an independent assessment and do not downgrade it. See [current review scope](revision/READINESS.md).
 
 # Independent adversarial review

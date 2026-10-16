@@ -22,32 +22,6 @@
   },
   {
     "type": "function",
-    "name": "MAX_CHECKPOINT_AGE",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "MAX_FEED_AGE",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
     "name": "MIN_LIQUIDITY",
     "inputs": [],
     "outputs": [
@@ -75,19 +49,6 @@
   {
     "type": "function",
     "name": "SUPPLY",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "WINDOW",
     "inputs": [],
     "outputs": [
       {
@@ -168,13 +129,6 @@
   },
   {
     "type": "function",
-    "name": "checkpoint",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
     "name": "factory",
     "inputs": [],
     "outputs": [
@@ -239,58 +193,6 @@
         "name": "upper",
         "type": "int24",
         "internalType": "int24"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "observationCount",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "observations",
-    "inputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "time",
-        "type": "uint64",
-        "internalType": "uint64"
-      },
-      {
-        "name": "tick",
-        "type": "int24",
-        "internalType": "int24"
-      },
-      {
-        "name": "liquid",
-        "type": "bool",
-        "internalType": "bool"
-      },
-      {
-        "name": "tickCumulative",
-        "type": "int256",
-        "internalType": "int256"
-      },
-      {
-        "name": "badSeconds",
-        "type": "uint256",
-        "internalType": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -395,19 +297,6 @@
         "name": "",
         "type": "bool",
         "internalType": "bool"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "twapTick",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "tick",
-        "type": "int24",
-        "internalType": "int24"
       }
     ],
     "stateMutability": "view"

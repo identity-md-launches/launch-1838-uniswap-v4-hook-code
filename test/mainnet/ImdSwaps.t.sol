@@ -116,7 +116,7 @@ contract ImdSwapsTest is ImdFixture {
         _buy(alice, 0.01 ether);
         hook.syncPayer();
         uint256 accrued = vault.totalAccrued();
-        uint256 observations = oracle.observationCount();
+        uint8 oldTier = hook.tier();
         uint256 claims = manager.balanceOf(address(vault), uint160(address(quote)));
         bytes[] memory plan = _explorerPlan(false, hook.remainingQuota(payer), 1);
         vm.prank(payer);
@@ -124,13 +124,13 @@ contract ImdSwapsTest is ImdFixture {
         router.execute(hex"10", plan, block.timestamp + 600);
         assertEq(vault.totalAccrued(), accrued);
         assertEq(hook.sold(payer), 0);
-        assertEq(oracle.observationCount(), observations);
+        assertEq(hook.tier(), oldTier);
         assertEq(manager.balanceOf(address(vault), uint160(address(quote))), claims);
     }
 
     function testQuoteRollbackNoAccrualOrCredits() public {
         _buy(alice, 100 ether);
-        uint256 n = oracle.observationCount();
+        uint8 oldTier = hook.tier();
         uint256 accrued = vault.totalAccrued();
         _quoteIn(true, 100 ether);
         _quoteOut(true, 100 ether);
@@ -138,7 +138,7 @@ contract ImdSwapsTest is ImdFixture {
         _quoteOut(false, 1 ether);
         assertEq(hook.eligible(QUOTER), 0);
         assertEq(hook.sold(QUOTER), 0);
-        assertEq(oracle.observationCount(), n);
+        assertEq(hook.tier(), oldTier);
         assertEq(vault.totalAccrued(), accrued);
     }
 }

@@ -15,6 +15,13 @@ contract V4ActivationTest is ImdFixture {
         _launchTokenOnly(-129000);
     }
 
+    function testPermissionlessGateCheckpointRequiresActivation() public {
+        vm.expectRevert(UnlkImdHook.NotActivated.selector);
+        hook.checkpoint();
+        vm.expectRevert(UnlkImdHook.NotActivated.selector);
+        hook.updateMilestone();
+    }
+
     function testInactiveV3CodeIsNoLongerAdmittedAsProductionSource() public {
         vm.prank(owner);
         vm.expectRevert(UnlkImdHook.InvalidConfig.selector);

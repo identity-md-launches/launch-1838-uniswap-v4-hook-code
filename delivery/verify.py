@@ -8,6 +8,7 @@ No signing, broadcasting, package installation, or source modification.
 import argparse
 import hashlib
 import json
+import lzma
 from pathlib import Path
 import subprocess
 
@@ -18,7 +19,10 @@ NAMES = ("UnlkToken", "UnlkHook", "UnlkSwapRouter", "MerkleClaimEvidence", "Unlk
 
 
 def read(path):
-    return json.loads((ROOT / path).read_text())
+    source = ROOT / path
+    if source.is_file():
+        return json.loads(source.read_text())
+    return json.loads(lzma.decompress(source.with_suffix(source.suffix + ".xz").read_bytes()))
 
 
 def run(args, **kwargs):

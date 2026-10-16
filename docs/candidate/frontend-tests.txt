@@ -1,28 +1,3 @@
-✔ candidate stays undeployed and has all sixteen tiers, separate from the live rules (0.617316ms)
-✔ fee-inclusive buy and net exact-output sell preserve wei rounding (7.354142ms)
-✔ metadata URLs reject executable, private, credentialed and ambiguous schemes (0.426678ms)
-✔ SVG is inert image content and rejects active/external references (1.200004ms)
-✔ index cursors cannot redirect requests or inject objects (0.221319ms)
-✔ metadata and resource failures are visible, never unsafe fallback content (2.292818ms)
-✔ indexed inventory is paginated discovery; only current onchain owners appear (0.458497ms)
-✔ recorded authentic mainnet tokenURI images #1116 and #1181 render as inert blobs offline (3.156814ms)
-✔ future candidate reads refuse absent deployment, wrong chain and wrong code (1.599911ms)
-✔ future reader separates donations, earned funds and unavailable oracle data (1.356483ms)
-✔ wallet allowance uses exact floors, sales and balance caps (1.236254ms)
-✔ scenario holds ledger fixed, final unlock includes transfer-only balances, achieved tiers never imply revoked rights (0.212129ms)
-✔ large BigInt values and all tiers retain monotonic allowance (1.93427ms)
-✔ input and slippage reject unsafe formats and preserve a wei (0.512838ms)
-✔ oracle progress distinguishes invalid, stale, gap, below target and elapsed-but-unconfirmed (0.297299ms)
-✔ real native round proofs reject wrong amount, recipient, incomplete tree and duplicates (77.819748ms)
-✔ live same-block buy simulations match exact fee/delta arithmetic (0.297688ms)
-✔ swap step accounts exact fees and partial fills in both directions (0.208549ms)
-✔ percentage fills floor in wei, reserve gas and never exceed spendable balance (0.212948ms)
-✔ confirmation progress does not increase merely because the clock advances (0.184569ms)
-ℹ tests 20
-ℹ suites 0
-ℹ pass 20
-ℹ fail 0
-ℹ cancelled 0
-ℹ skipped 0
-ℹ todo 0
-ℹ duration_ms 155.319416
+Historical record archived byte-for-byte: docs/unlock-gates/historical-checks.tar.xz
+Original member: docs/candidate/frontend-tests.txt
+Hashes and recovery: docs/unlock-gates/ARCHIVES.md and historical-checks.json

@@ -60,12 +60,6 @@ contract UnlkImdHook is IHooks {
     uint24 public constant FEE = 12500;
     int24 public constant TICK_SPACING = 60;
     uint160 public constant FLAGS = 0x3fcc;
-    uint256 public constant CONFIRMATION = 6 hours;
-    uint256 public constant FINAL_CONFIRMATION = 24 hours;
-    uint256 public constant MIN_CONFIRMATION_INTERVAL = 4 minutes;
-    uint256 public constant MAX_CONFIRMATION_GAP = 10 minutes;
-    uint256 public constant ORACLE_MAX_FEED_AGE = 90 minutes;
-    uint256 public constant ORACLE_MAX_CHECKPOINT_AGE = 5 minutes;
     uint128 public constant ORACLE_MIN_LIQUIDITY = 1e18;
     /// @notice The locked seed's minimum opening-value capacity (see `SeedDepth`). Enforced when the factory
     /// seeds, when the bundle is staged and when it is activated, so a seed the oracle would class illiquid
@@ -128,8 +122,6 @@ contract UnlkImdHook is IHooks {
     uint16 public p = 2000;
     bool public fullyUnlocked;
     uint8 public tier;
-    uint64[16] public qualifyingSince;
-    uint64 public lastConfirmation;
     bytes32 private pendingOperation;
     address private pendingInitiator;
     uint256 private pendingSpecifiedFee;
@@ -346,7 +338,6 @@ contract UnlkImdHook is IHooks {
         swarm = distributor;
         payer = requester;
         oracle_.bind(_key, address(token), seedTickLower, seedTickUpper);
-        oracle_.checkpoint();
         emit Activated(address(rewards_), address(oracle_), launchNumber_, requester);
     }
 
@@ -369,9 +360,7 @@ contract UnlkImdHook is IHooks {
     function _verifyOracle(UnlkImdOracle oracle_) private view {
         if (
             oracle_.hook() != address(this) || address(oracle_.poolManager()) != address(poolManager)
-                || oracle_.bound() || oracle_.MAX_FEED_AGE() != ORACLE_MAX_FEED_AGE
-                || oracle_.MAX_CHECKPOINT_AGE() != ORACLE_MAX_CHECKPOINT_AGE
-                || oracle_.MIN_LIQUIDITY() != ORACLE_MIN_LIQUIDITY || oracle_.WINDOW() != 2 hours
+                || oracle_.bound() || oracle_.MIN_LIQUIDITY() != ORACLE_MIN_LIQUIDITY
                 || oracle_.MIN_SEED_QUOTE_CAPACITY() != MIN_SEED_QUOTE_CAPACITY
                 || oracle_.SUPPLY() != token.SUPPLY()
         ) revert InvalidConfig();
@@ -408,7 +397,6 @@ contract UnlkImdHook is IHooks {
         // A later PoolManager protocol-fee change cannot silently change the promised total trading fee.
         (,, uint24 protocolFee, uint24 lpFee) = poolManager.getSlot0(poolId);
         if (protocolFee != 0 || lpFee != FEE) revert InvalidPool();
-        oracle.checkpoint();
         uint256 specifiedFee = _specifiedFee(params);
         pendingSpecifiedFee = specifiedFee;
         return (IHooks.beforeSwap.selector, toBeforeSwapDelta(int128(int256(specifiedFee)), 0), 0);
@@ -450,8 +438,9 @@ contract UnlkImdHook is IHooks {
         // Hypothetical result only: no E/S, oracle progress, vault accrual or fee claim. The hook's fee delta
         // stays unsettled, so even a hypothetical non-reverting quote could not finish its unlock.
         if (quote) return (IHooks.afterSwap.selector, unspecifiedReturn);
+        // Validate the actual executed sale using ONLY the gate already open. This swap's post-price
+        // cannot retroactively authorize its own sale. An earlier successful swap/checkpoint can.
         _account(initiator, tokenIs0 ? delta.amount0() : delta.amount1());
-        oracle.checkpoint();
         // Feed failures and low liquidity never block swap settlement or native reward claims.
         _updateMilestone();
         if (fee != 0) {
@@ -522,7 +511,6 @@ contract UnlkImdHook is IHooks {
         // All official-pool liquidity is the factory's seed; it has no removal path. No JIT fee diversion.
         if (sender != launchFactory) revert Unauthorized();
         if (!seedRecorded) _recordSeed(params);
-        if (activated) oracle.checkpoint();
         return IHooks.beforeAddLiquidity.selector;
     }
 
@@ -562,7 +550,6 @@ contract UnlkImdHook is IHooks {
         bytes calldata
     ) external onlyManager returns (bytes4, BalanceDelta) {
         _checkPool(key);
-        if (activated) oracle.checkpoint();
         return (IHooks.afterAddLiquidity.selector, BalanceDelta.wrap(0));
     }
 
@@ -576,7 +563,6 @@ contract UnlkImdHook is IHooks {
         if (sender != launchFactory) revert Unauthorized();
         // Fee collection (zero delta) only: principal can never leave the pool.
         if (params.liquidityDelta != 0) revert PrincipalLocked();
-        if (activated) oracle.checkpoint();
         return IHooks.beforeRemoveLiquidity.selector;
     }
 
@@ -589,7 +575,6 @@ contract UnlkImdHook is IHooks {
         bytes calldata
     ) external onlyManager returns (bytes4, BalanceDelta) {
         _checkPool(key);
-        if (activated) oracle.checkpoint();
         return (IHooks.afterRemoveLiquidity.selector, BalanceDelta.wrap(0));
     }
 
@@ -659,10 +644,16 @@ contract UnlkImdHook is IHooks {
 
     // ------------------------------------------------------------------ milestones
 
-    function updateMilestone() external returns (bool) {
+    /// @notice Permissionless evaluation of current official pool state; no caller-supplied price.
+    /// Observations happen here and after each successful swap, including multiple swaps in one transaction.
+    function checkpoint() public returns (bool) {
         if (!activated) revert NotActivated();
-        oracle.checkpoint();
         return _updateMilestone();
+    }
+
+    /// @notice Backward-compatible entry point for existing keeper integrations.
+    function updateMilestone() external returns (bool) {
+        return checkpoint();
     }
 
     function tierThreshold(uint8 index) public pure returns (uint256) {
@@ -701,40 +692,17 @@ contract UnlkImdHook is IHooks {
         try oracle.fdvUsd() returns (uint256 value) {
             fdv = value;
         } catch {
-            // An invalid sample is not a sample: it never confirms, never advances `lastConfirmation`, and
-            // preserves earned tiers and the visible pending start. Whether it restarts the run is decided
-            // only by the gap between valid samples below, exactly as if nobody had called, so a call made
-            // during routine feed lateness cannot discard confirmation that an uncalled interval would keep.
+            // Invalid reference or pool state prevents NEW advancement only. Never revoke earned rights
+            // or block within-quota trading, unrestricted token transfers or independent native claims.
             return false;
         }
-        uint8 next = tier;
-        if (tierForFdv(fdv) <= next) {
-            qualifyingSince[next] = 0;
-            lastConfirmation = 0;
-            return false;
-        }
-        uint256 gap = block.timestamp - lastConfirmation;
-        if (qualifyingSince[next] == 0 || gap > MAX_CONFIRMATION_GAP) {
-            qualifyingSince[next] = uint64(block.timestamp);
-            lastConfirmation = uint64(block.timestamp);
-            return false;
-        }
-        if (gap < MIN_CONFIRMATION_INTERVAL) return false;
-        lastConfirmation = uint64(block.timestamp);
-        uint256 required = next == 15 ? FINAL_CONFIRMATION : CONFIRMATION;
-        if (block.timestamp - qualifyingSince[next] < required) return false;
-        // Exactly one tier per confirmation. A high price cannot start later tiers in parallel.
-        tier = next + 1;
-        p = 2000 + uint16(tier) * 500;
-        if (tier == 16) {
-            fullyUnlocked = true;
-        } else if (tierForFdv(fdv) > tier) {
-            qualifyingSince[tier] = uint64(block.timestamp);
-        } else {
-            // The next tier's clock cannot start while this sample is below its own threshold.
-            lastConfirmation = 0;
-        }
-        emit Milestone(tier, p, fullyUnlocked, fdv);
+        uint8 next = tierForFdv(fdv);
+        if (next <= tier) return false;
+        // Open every crossed door immediately, once, for everyone. Neither E nor S is changed here.
+        tier = next;
+        p = 2000 + uint16(next) * 500;
+        if (next == 16) fullyUnlocked = true;
+        emit Milestone(next, p, fullyUnlocked, fdv);
         return true;
     }
 

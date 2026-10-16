@@ -1,8 +1,3 @@
-
-  dist-candidate/assets/app.js                                  802.1kb
-  dist-candidate/assets/jetbrains-mono-semibold-MVL5K7GZ.woff2   92.3kb
-  dist-candidate/assets/jetbrains-mono-regular-DYCCJ225.woff2    90.2kb
-  dist-candidate/assets/app.css                                  34.5kb
-
-⚡ Done in 4206ms
-Built dist-candidate/ offline; publication is not authorized.
+Historical record archived byte-for-byte: docs/unlock-gates/historical-checks.tar.xz
+Original member: docs/mainnet/frontend-build.txt
+Hashes and recovery: docs/unlock-gates/ARCHIVES.md and historical-checks.json

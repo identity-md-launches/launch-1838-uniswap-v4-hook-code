@@ -1,36 +1,35 @@
-# UNLOCK / UNLK — mainnet source candidate, release blocked
+# UNLOCK / UNLK — one-way gate candidate
 
-**Oracle redesign (this revision, continuing `8f31511e2b0d27d7c59b8bb33aeb65aeb3ae6ed6`):** the active candidate price source is now the pool-derived, no-paid-feed `ImdSampledUsdSource`: official UNLK/IMD hook TWAP × permissionless **sampled** IMD/native-ETH v4 pool price × validated Chainlink ETH/USD, FDV = 1B × USD/UNLK. Setup no longer admits the per-block proof source, so no ~10 ETH/day proof collector is a release requirement; a keeper must still call `sample()` at least every 20 minutes (normal gas, ~0.007 ETH/day at an illustrative 1 gwei). The preview site shows a pool-derived spot price/indicative FDV with block, sources, freshness and unavailable states. Manipulation tests show flash/same-block and anchor attacks are contained, but **repeated or sustained manipulation passes, and a modelled final-bypass attack with attacker-owned LP nets profit**: the oracle High remains open, H-01 remains High, independent review of these changes is **pending**, and deployment stays blocked. See [SAMPLED_ORACLE.md](docs/mainnet/revision/SAMPLED_ORACLE.md).
+Implemented on top of accepted commit `3939f319d67dcd92eb50b057c0c13754ccb6b35c`. This is source, tests, candidate UI and release preparation only. No mainnet transaction, token replacement, deployment or live-site publication occurred. Existing live launch1560 configuration and contracts remain unchanged.
 
-This continues `18062fc08c2fc3ab47b79316c1d1dea701e36e7f`. It preserves the live launch1560 contracts/configuration and prior candidate history. No public transaction, deployment, token replacement or site publication was performed. Candidate writes remain disabled and the NFT gallery stays read-only.
+A valid instantaneous **official UNLK/IMD** price touch opens every crossed FDV gate immediately and permanently:20% initially,25% at$100K, then the unchanged ladder through95% at$40M. A valid$50M touch permanently bypasses quota for **all** holders, including E=0 recipients. Brief spikes and immediate selling are intended; no UNLK TWAP, confirmation timer, sequential wait or manipulation-resistance claim remains.
 
-The mainnet target remains IMD `univ4_hook`, 1B UNLK / 18 decimals, 10/87/3 allocation, standard Universal Router compatibility, official 1.25% fee plus 75 bps in IMD to the fixed beneficiary, protected seed principal and the existing sixteen sequential USD tiers with permanent final bypass.
+Cumulative acquisition/sale accounting and buy maturity are preserved. With E=1000 and S=200, the30% gate permits only100 more tokens. Gate changes never reset S or credit E. Sales are checked against the gate already open before their own post-swap update. The separate no-subscription sampled IMD/USD reference retains its48h cold start,2h/24h history, freshness and external-market checks; ongoing sampling consumes normal Ethereum gas.
 
-This revision implements:
+**Mainnet decision: NO-GO.** The separate contributor review confirms the requested gate behavior and exact arithmetic, but **High shared-executor quota pooling** and **High external-reference manipulation** remain open. External independent audit and final published-commit release approval are pending. Fork success is not deployment safety approval.
 
-- One-block maturity for new buy credit across every router call/UI, without redefining cumulative E or transferring rights. Claims/payer credits and ordinary transfers remain independent.
-- An optional immutable wallet-scoped executor that uses the standard router, pulls only from its authenticated caller, fixes settlement to that wallet and retains its own separate E/S ledger. Direct wallets and legitimate smart accounts still trade normally.
-- A noncircular IMD/USD source that authenticates every consecutive block's v4 price/depth using Ethereum headers and account/storage proofs, then composes 2h/24h history with Chainlink ETH/USD. The inactive v3 reader is no longer admitted as the production source.
-- Regression, fuzz, invariant and actual recorded-mainnet tests, a disabled preview, unsigned oracle/stage2 preparation and an updated release handoff.
+- [Consolidated GO/NO-GO, exact checks and remaining requirements](docs/unlock-gates/HANDOFF.md)
+- [Current gate/accounting/price design](docs/unlock-gates/DESIGN.md)
+- [Unsigned reproducible factory/stage2 scripts and concrete release operations](docs/unlock-gates/DEPLOYMENT.md)
+- [Separate contributor review, fixed findings and unresolved Highs](docs/unlock-gates/INDEPENDENT_REVIEW.md)
+- [Release bytecode hashes/sizes](docs/mainnet/ARTIFACTS.json) and [ABIs](docs/mainnet/abi/)
 
-**H-01 remains High:** mature rights at a shared executor can still be consumed by another user supplying their own tokens. The on-chain reductions do not resolve global beneficial-user identity. **Oracle release is also blocked:** the observed market fails the depth screen, full real history is absent, and sustained manipulation cost is not independently established. Final changes are pending independent review.
-
-Read the [readiness matrix and exact blockers](docs/mainnet/revision/READINESS.md), [H-01 proof and reductions](docs/mainnet/revision/H-01.md), [oracle evidence, interval proof and economics](docs/mainnet/revision/ORACLE.md), and [two-stage deployment/postflight specification](docs/mainnet/DEPLOYMENT.md). The [release plan](docs/mainnet/release-plan.json) is a source handoff, not a launch manifest. The existing root launch manifest describes the historical project.
-
-Build and verify offline with the unchanged pinned Solidity 0.8.26 configuration:
+The pinned Solidity0.8.26 project and all ordinary vendored dependencies build offline. No build configuration or dependency changed:
 
 ```sh
 forge build
-forge test --fuzz-seed 0x575e97c9f046cbe85a2214c324e8188fb0e71e67df58fe9dfbb5d33225f04312
+FOUNDRY_FUZZ_SEED=0xda8bb4c7a1dfecbe1d2824491108f08053450070bcb18434381100e02a366653 forge test
 forge fmt --check
-python3 scripts/mainnet/artifacts.py --check
-node web/scripts/typecheck-offline.mjs
-node web/scripts/build-offline.mjs --test
-(cd web && node --test ../test/scratch/frontend/*.test.mjs)
+bash scripts/unlock-gates/check.sh
 ```
 
-Network-dependent local rehearsal: `bash scripts/mainnet/fork.sh [RPC_URL]`. The public evidence source is `https://ethereum-rpc.publicnode.com`; no script signs or broadcasts. A read-only proxy transport may be needed on a sandboxed worker. Full oracle behavior tests are synthetic; actual mainnet proof and venue evidence are identified separately.
+Optional read-only network evidence and local recorded-block rehearsal:
 
-The task prohibits touching `.git/`, so this worker does not create or push a commit. The contributor upload step must publish the ordinary changed files and record that exact commit before final review. No commit or deployment success is fabricated. [Provenance](docs/mainnet/revision/PROVENANCE.json) records the public HEAD observed at the requested base.
+```sh
+python3 scripts/unlock-gates/record-network.py https://ethereum-rpc.publicnode.com
+bash scripts/unlock-gates/fork.sh https://eth.drpc.org --no-storage-caching
+```
 
-Earlier generations remain under [docs/candidate](docs/candidate/), [docs/successor](docs/successor/) and the historical reports in [docs/mainnet](docs/mainnet/). The previous root README is retained [here](docs/mainnet/revision/README.pre-revision.md). Historical approvals/check logs do not approve this revision.
+The fork deploys only into local fork state, impersonates the factory signer locally, and uses explicitly simulated future sampling/Chainlink timing; it is not actual48h oracle history. Default offline tests need no RPC, environment variables, filesystem cheatcodes or FFI.
+
+The task prohibits `.git/` changes. The contributor uploader must publish these ordinary files while preserving history, return the exact GitHub commit and bind it to the source checksums. No unpublished SHA is invented. Earlier generations and their historical reports remain in the repository; their time-based rules and approvals do not certify this successor.

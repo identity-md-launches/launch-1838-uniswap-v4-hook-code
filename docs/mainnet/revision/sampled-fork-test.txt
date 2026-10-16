@@ -1,3 +1,3 @@
-forge test --match-contract SampledSourceRehearsal --fork-url https://ethereum-rpc.publicnode.com --fork-block-number 26204279 (copied into test/scratch, read-only, no broadcast)
-[PASS] testActualPoolSampleAndSpotAtRecordedBlock() (gas: 131611)
-Suite result: ok. 1 passed; 0 failed; 0 skipped
+Historical record archived byte-for-byte: docs/unlock-gates/historical-checks.tar.xz
+Original member: docs/mainnet/revision/sampled-fork-test.txt
+Hashes and recovery: docs/unlock-gates/ARCHIVES.md and historical-checks.json

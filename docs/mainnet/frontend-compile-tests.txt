@@ -1,13 +1,3 @@
-
-  test/scratch/frontend/candidate.test.mjs  372.9kb
-
-⚡ Done in 2222ms
-
-  test/scratch/frontend/mainnet.test.mjs  355.4kb
-
-⚡ Done in 937ms
-
-  test/scratch/frontend/math.test.mjs  379.5kb
-
-⚡ Done in 1028ms
-Tests compiled into test/scratch/frontend. Run node --test from web/.
+Historical record archived byte-for-byte: docs/unlock-gates/historical-checks.tar.xz
+Original member: docs/mainnet/frontend-compile-tests.txt
+Hashes and recovery: docs/unlock-gates/ARCHIVES.md and historical-checks.json

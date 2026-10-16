@@ -7,7 +7,7 @@ import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
 import {Currency} from "v4-core/src/types/Currency.sol";
 import {StateLibrary} from "v4-core/src/libraries/StateLibrary.sol";
 import {TickMath} from "v4-core/src/libraries/TickMath.sol";
-import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {ImdSpotMath} from "./ImdSpotMath.sol";
 import {ImdSeedDepth as SeedDepth} from "./ImdSeedDepth.sol";
 import {IUnlkHookView} from "../interfaces/IIntegration.sol";
 import {MainnetPins} from "./MainnetPins.sol";
@@ -16,21 +16,18 @@ interface IImdUsdSource {
     function priceUsd() external view returns (uint256);
 }
 
-/// @notice Explicit v4 tick accumulator. No assumed built-in v4 oracle, no spot-price milestones.
+/// @notice Instantaneous FDV for the exact bound official UNLK/IMD pool.
+/// @dev No UNLK history, TWAP, confirmation or time filter. The independent IMD/USD reference retains
+/// its own history/freshness/market validation. A valid short-lived UNLK spike may permanently open gates.
 contract UnlkImdOracle {
     using PoolIdLibrary for PoolKey;
     using StateLibrary for IPoolManager;
 
-    uint256 public constant WINDOW = 2 hours;
-    uint256 public constant MAX_CHECKPOINT_AGE = 5 minutes;
     uint256 public constant MIN_SEED_QUOTE_CAPACITY = SeedDepth.MIN_SEED_QUOTE_CAPACITY;
     uint256 public constant SUPPLY = 1_000_000_000 ether;
-    IPoolManager public immutable poolManager;
-    /// @notice ETH/USD feed freshness is enforced inside the composite IMD/USD adapter.
-    uint256 public constant MAX_FEED_AGE = 90 minutes;
     uint128 public constant MIN_LIQUIDITY = 1e18;
+    IPoolManager public immutable poolManager;
     IImdUsdSource public immutable feed;
-    /// @notice The deployed stage-1 hook. Immutable: only it may bind the pool, once, at activation.
     address public immutable hook;
     address public token;
     address public factory;
@@ -41,15 +38,6 @@ contract UnlkImdOracle {
     uint160 public rangeUpper;
     int24 public rangeLowerTick;
     int24 public rangeUpperTick;
-
-    struct Observation {
-        uint64 time;
-        int24 tick;
-        bool liquid;
-        int256 tickCumulative;
-        uint256 badSeconds;
-    }
-    Observation[] public observations;
 
     error Unauthorized();
     error InvalidConfig();
@@ -75,7 +63,13 @@ contract UnlkImdOracle {
                         && Currency.unwrap(key.currency1) == token_)
                     || (Currency.unwrap(key.currency1) == MainnetPins.IMD_ADDRESS
                         && Currency.unwrap(key.currency0) == token_)) || token_ == address(0)
-                || lower >= upper
+                || token_ == MainnetPins.IMD_ADDRESS || key.tickSpacing != 60
+                || Currency.unwrap(key.currency0) >= Currency.unwrap(key.currency1)
+                || PoolId.unwrap(key.toId()) != PoolId.unwrap(IUnlkHookView(hook).poolKey().toId())
+                || token_ != IUnlkHookView(hook).token()
+                || address(poolManager) != address(IUnlkHookView(hook).poolManager())
+                || lower != IUnlkHookView(hook).seedTickLower()
+                || upper != IUnlkHookView(hook).seedTickUpper() || lower >= upper
         ) revert InvalidConfig();
         bound = true;
         token = token_;
@@ -93,95 +87,25 @@ contract UnlkImdOracle {
         return (rangeLowerTick, rangeUpperTick);
     }
 
-    /// @notice Anyone may checkpoint real pool state. The hook checkpoints on both sides of state changes.
-    /// @dev One observation per timestamp; replacement within a block adds ZERO price-time weight.
-    function checkpoint() external {
+    /// @notice USD with 18 decimals, using executed slot0.sqrtPriceX96 rather than the rounded tick.
+    /// Both bound currencies have 18 decimals (verified at setup). Multiply the reference by the fixed
+    /// whole-token supply BEFORE applying the pool ratio to avoid per-token rounding amplified by 1B.
+    /// No history of unobserved touches is inferred. Call the hook's checkpoint to persist new gates.
+    function fdvUsd() external view returns (uint256) {
         if (!bound) revert InvalidOracle();
-        (uint160 sqrtPrice, int24 tick, uint24 protocolFee, uint24 lpFee) = poolManager.getSlot0(poolId);
+        (uint160 sqrtPrice,, uint24 protocolFee, uint24 lpFee) = poolManager.getSlot0(poolId);
         (uint128 liquidity,,) =
             poolManager.getPositionInfo(poolId, factory, rangeLowerTick, rangeUpperTick, bytes32(0));
-        // Opening-value depth, with both token orders supported; no ETH reserve floor.
-        uint256 depth = SeedDepth.capacity(rangeLower, rangeUpper, liquidity, tokenIs0);
-        bool liquid = sqrtPrice >= rangeLower && sqrtPrice <= rangeUpper && sqrtPrice != 0
-            && liquidity >= MIN_LIQUIDITY && depth >= MIN_SEED_QUOTE_CAPACITY && protocolFee == 0
-            && lpFee == 12500;
-        uint256 n = observations.length;
-        if (n == 0) {
-            observations.push(Observation(uint64(block.timestamp), tick, liquid, 0, 0));
-        } else {
-            Observation storage prev = observations[n - 1];
-            if (prev.time == block.timestamp) {
-                prev.tick = tick;
-                prev.liquid = liquid;
-            } else {
-                (int256 cumulative, uint256 bad) = _at(prev, block.timestamp);
-                observations.push(Observation(uint64(block.timestamp), tick, liquid, cumulative, bad));
-            }
-        }
-    }
-
-    function observationCount() external view returns (uint256) {
-        return observations.length;
-    }
-
-    /// @return tick Time-weighted IMD-per-UNLK tick, rounded towards negative infinity in BOTH currency orders.
-    function twapTick() public view returns (int24 tick) {
-        uint256 n = observations.length;
-        if (n == 0 || block.timestamp < WINDOW) revert InvalidOracle();
-        Observation storage last = observations[n - 1];
-        uint256 cutoff = block.timestamp - WINDOW;
-        if (observations[0].time > cutoff || block.timestamp - last.time > MAX_CHECKPOINT_AGE || !last.liquid)
-        {
-            revert InvalidOracle();
-        }
-        // Find the last observation at/before the window start. O(log n), no history scan.
-        uint256 lo = 0;
-        uint256 hi = n;
-        while (lo + 1 < hi) {
-            uint256 mid = (lo + hi) / 2;
-            if (observations[mid].time <= cutoff) lo = mid;
-            else hi = mid;
-        }
-        (int256 startCumulative, uint256 startBad) = _at(observations[lo], cutoff);
-        (int256 endCumulative, uint256 endBad) = _at(last, block.timestamp);
-        if (endBad != startBad) revert InvalidOracle();
-        int256 diff = tokenIs0 ? endCumulative - startCumulative : startCumulative - endCumulative;
-        int256 mean = diff / int256(WINDOW);
-        // No modulo-based pseudo-randomness: this is signed floor division, including negative ticks.
-        if (mean * int256(WINDOW) > diff) --mean;
-        tick = int24(mean);
-    }
-
-    /// @notice FDV is in USD with 18 decimals. Reverts on any invalid input; callers isolate failures.
-    function fdvUsd() external view returns (uint256) {
-        int24 tick = twapTick();
-        // twapTick is already conservatively normalized to IMD per UNLK.
-        uint160 sqrtPrice = TickMath.getSqrtPriceAtTick(tick);
-        uint256 imdPerToken;
-        if (sqrtPrice <= type(uint128).max) {
-            imdPerToken = Math.mulDiv(uint256(sqrtPrice) * sqrtPrice, 1 ether, 1 << 192);
-        } else {
-            uint256 ratioX128 = Math.mulDiv(sqrtPrice, sqrtPrice, 1 << 64);
-            imdPerToken = Math.mulDiv(ratioX128, 1 ether, 1 << 128);
-        }
-        uint256 imdUsd = _imdUsd();
-        uint256 tokenUsd = Math.mulDiv(imdPerToken, imdUsd, 1 ether);
-        return Math.mulDiv(SUPPLY, tokenUsd, 1 ether);
-    }
-
-    function _imdUsd() private view returns (uint256) {
-        uint256 value = feed.priceUsd();
-        if (value == 0) revert InvalidOracle();
-        return value;
-    }
-
-    function _at(Observation storage observation, uint256 timestamp)
-        private
-        view
-        returns (int256 cumulative, uint256 bad)
-    {
-        uint256 elapsed = timestamp - observation.time;
-        cumulative = observation.tickCumulative + int256(observation.tick) * int256(elapsed);
-        bad = observation.badSeconds + (observation.liquid ? 0 : elapsed);
+        if (
+            sqrtPrice == 0 || sqrtPrice < rangeLower || sqrtPrice > rangeUpper || liquidity < MIN_LIQUIDITY
+                || SeedDepth.capacity(rangeLower, rangeUpper, liquidity, tokenIs0) < MIN_SEED_QUOTE_CAPACITY
+                || protocolFee != 0 || lpFee != 12500
+        ) revert InvalidOracle();
+        uint256 imdUsd = feed.priceUsd();
+        // The admitted source's ETH/USD cap and TickMath domain fit this bound. Reject nonsensical
+        // adapters rather than overflowing. Source failures are caught by the hook, never by trading.
+        if (imdUsd == 0 || imdUsd > type(uint256).max / (SUPPLY / 1 ether)) revert InvalidOracle();
+        uint256 base = imdUsd * (SUPPLY / 1 ether);
+        return ImdSpotMath.fdv(sqrtPrice, base, tokenIs0);
     }
 }

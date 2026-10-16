@@ -1,3 +1,5 @@
+> Current revision (2026-10-16): Superseded release status: see [../../unlock-gates/HANDOFF.md](../../unlock-gates/HANDOFF.md). Valid instantaneous UNLK spikes are accepted; H-01/external-reference Highs are separate, and contributor review now occurred.
+
 # Readiness and final-change review handoff
 
 **CODE COMPLETE FOR THIS MITIGATION CANDIDATE; RELEASE BLOCKED.** This is not a claim of global H-01 prevention, production-safe irreversible unlocking, independent audit, public deployment or publication. The original independent High remains High. The exact submission commit must be supplied by the contributor upload step; local `.git` access/writes and public transactions were not performed.

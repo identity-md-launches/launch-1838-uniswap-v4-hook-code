@@ -1,5 +1,3 @@
-no tools configured (/home/imd/.identitymd/tools.json).
-
-  a tool is a stdio MCP server already installed on this machine. add one with
-  imd tools add image --command /opt/imd-tools/image-server --env IMAGE_PROVIDER_API_KEY --enable generate
-  the key's name is recorded; its value stays in your shell and never leaves this machine.
+Historical record archived byte-for-byte: docs/unlock-gates/historical-checks.tar.xz
+Original member: delivery/checks/signing-tools.txt
+Hashes and recovery: docs/unlock-gates/ARCHIVES.md and historical-checks.json

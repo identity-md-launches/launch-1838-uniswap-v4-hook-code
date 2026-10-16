@@ -1,3 +1,5 @@
+> Current revision (2026-10-16): Current composition is official UNLK/IMD instantaneous sqrt price × this unchanged sampled reference. All UNLK TWAP, end-of-block persistence, sequential6h/final24h confirmation and milestone-keeper requirements below are historical and superseded. The external reference's48h cold start, windows, freshness/market checks, latency and gas remain. Its attack models are conditional and are not verified realizable mainnet exit profit. See [current design](../../unlock-gates/DESIGN.md) and [consolidated NO-GO](../../unlock-gates/HANDOFF.md).
+
 # Pool-derived sampled price source (oracle redesign)
 
 **Status: implemented and tested locally; release still blocked.** No transaction, deployment or site publication was made. Final changes are **pending independent review**. The High oracle-manipulation finding is **not closed**: the measurements below show a profitable attack under stated assumptions. H-01 (shared-executor quota pooling) also stays High and unchanged.
