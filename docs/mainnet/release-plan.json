@@ -1,0 +1,81 @@
+{
+  "documentType": "mainnet-source-preparation-not-launch-manifest",
+  "status": "BLOCKED_UNDEPLOYED_NO_PUBLIC_WRITES",
+  "baseCommit": "806e94d44d6a96b8561f48ebf5f744c4065c4918",
+  "acceptedChangeCommit": null,
+  "commitResponsibility": "Contributor uploader records the final exact commit; local .git writes are prohibited. Source hashes accompany this change set.",
+  "chainId": 1,
+  "kind": "univ4_hook",
+  "pairWith": "imd",
+  "poolBps": 8700,
+  "quoteToken": "0xd34a99bc0f67ae1bbd63c660e6d0b0dd03e263b7",
+  "quoteDecimals": 18,
+  "hook": "UnlkImdHook",
+  "hookSource": "src/mainnet/UnlkImdHook.sol",
+  "constructor": [
+    "$poolManager",
+    "$token",
+    "$factory",
+    "$owner"
+  ],
+  "flags": "0x3fcc",
+  "pool": {
+    "sort": "numeric token/IMD order",
+    "fee": 12500,
+    "tickSpacing": 60
+  },
+  "openingEconomics": {
+    "recordedPolicyVersion": 34,
+    "defaultFdvImd": "2500",
+    "advertisedCustomFdvImd": [
+      "250",
+      "250000"
+    ],
+    "actualSeed": "derive from selected policy and assigned new token ordering; no ETH floor"
+  },
+  "treasury": {
+    "beneficiary": "0x48e4e74fe1d0c14404ceb57b9fec5b21329c6ec9",
+    "feeBps": 75,
+    "asset": "IMD",
+    "receipt": "PoolManager ERC6909 id=uint160(IMD)",
+    "feeBase": "executed pool IMD leg",
+    "partialFill": "atomic rejection",
+    "continuesAfterUnlock": true
+  },
+  "priceSource": {
+    "contract": "ImdUsdSource",
+    "configuredProductionVenue": null,
+    "status": "missing reliable live depth and independently justified manipulation economics",
+    "discoveredV3Venue": "0xd6a822d028bbf7b6edfa1533e110ee40c08551d9",
+    "activeLiquidityAtRecordedBlock": "0",
+    "windowsSeconds": [
+      7200,
+      86400
+    ],
+    "postCreationWarmupSeconds": 86400
+  },
+  "recordedBlock": 26203203,
+  "services": "network/mainnet.json",
+  "artifacts": "ARTIFACTS.json",
+  "stage1Mining": "scripts/mainnet/mine.mjs",
+  "stage2Calldata": "script/mainnet/PrepareImd.s.sol",
+  "forkRehearsal": "rehearsal/mainnet/MainnetFork.t.sol",
+  "mainnetCandidateWrites": false,
+  "liveLaunch1560ConfigChanged": false,
+  "publicTransactions": [],
+  "deployment": null,
+  "hostingPublication": null,
+  "review": {
+    "sharedExecutor": "separate reviewer confirmed High H-01, blocking",
+    "finalMainnetCandidate": "pending independent review; follow-up tool request did not complete",
+    "authorChecks": "not independent authority"
+  },
+  "blockers": [
+    "High H-01: shared-executor quota pooling is unresolved; initiator authorization does not waive it",
+    "Reliable noncircular IMD/USD source with usable historical/current depth and sustained manipulation-cost evidence is not established",
+    "Independent review of final mainnet source, source configuration and exact accepted commit is pending",
+    "Browser/mobile checks unavailable: Playwright missing; protected admission harness inputs absent in this assignment",
+    "Actual production stage2 activation and postflight must be demonstrated after blockers are resolved; fork activation used synthetic pricing fixtures",
+    "Additional historical RPC probes later refused with HTTP403 requiring a personal token; future fork reruns need working authorized archive access. No credentials collected."
+  ]
+}
