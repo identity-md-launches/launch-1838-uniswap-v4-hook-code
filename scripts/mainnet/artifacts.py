@@ -6,7 +6,7 @@ The second pass resolves verifier -> token commitment without weakening any prot
 import json, pathlib, subprocess, sys
 root = pathlib.Path(__file__).resolve().parents[2]
 names = {'TOKEN':'UnlkToken','EVIDENCE':'MerkleClaimEvidence','ORACLE':'UnlkImdOracle',
-         'VAULT':'ImdFeeVault','VERIFIER':'ImdSetupVerifier','PRICE_SOURCE':'ImdSampledUsdSource'}
+         'VAULT':'ImdFeeVault','VERIFIER':'ImdSetupVerifier','PRICE_SOURCE':'ImdSpotUsdSource'}
 def artifact(name):
     return json.loads((root/'out'/f'{name}.sol'/f'{name}.json').read_text())
 def digest(code):

@@ -12,7 +12,7 @@ import {PoolManager} from "v4-core/src/PoolManager.sol";
 import {UnlkImdHook} from "src/mainnet/UnlkImdHook.sol";
 import {UnlkImdOracle, IImdUsdSource} from "src/mainnet/UnlkImdOracle.sol";
 import {ImdUsdSource} from "src/mainnet/ImdUsdSource.sol";
-import {ImdSampledUsdSource} from "src/mainnet/ImdSampledUsdSource.sol";
+import {ImdSpotUsdSource} from "src/mainnet/ImdSpotUsdSource.sol";
 import {MerkleClaimEvidence} from "src/MerkleClaimEvidence.sol";
 import {ImdFeeVault} from "src/mainnet/ImdFeeVault.sol";
 import {MainnetPins} from "src/mainnet/MainnetPins.sol";
@@ -20,16 +20,14 @@ import {IChainlinkEthUsd} from "src/interfaces/IIntegration.sol";
 
 /// @notice Local-only actual recorded-block factory/manager/router/Permit2 rehearsal. No broadcast.
 /// Stage1 is a LOCAL deployer impersonation with synthetic launch number, identities, complete two-recipient 100M tree and token funding.
-/// Companion creation, certification and activation use exact production code, including the SAMPLED source.
-/// No priceUsd mock, proof, alternate adapter or storage-seeded sample history is used for activation.
+/// Companion creation, certification and activation use exact production code, including the CURRENT-STATE
+/// spot source reading the ACTUAL recorded IMD/ETH v4 pool and the ACTUAL recorded Chainlink round.
+/// Activation happens in the setup block: no vm.warp, no sample history, no priceUsd mock, no fabricated round.
 ///
-/// FUTURE SIMULATION: external IMD/ETH pool state is FROZEN at the recorded block. 48h of permissionless
-/// sample() calls are simulated with vm.warp/roll. Chainlink's recorded answer is held constant and its round
-/// timestamps are renewed by the fixture's _freshFeed(). These are synthetic future observations/rounds,
-/// NOT actual 48h Ethereum history or evidence that a keeper is operating. Native claims mature locally.
-/// Gate-boundary tests inherited from OneWayGatesTest deliberately substitute reference/state fixtures AFTER
-/// activation to isolate exact edge cases; those tests are not real market moves. Actual swaps still run the
-/// recorded standard runtime. Test names/logs distinguish gate/identity counterexamples from live evidence.
+/// After activation, inherited tests that advance time renew Chainlink round timestamps through the fixture's
+/// _freshFeed() (recorded answer held constant). Gate-boundary tests inherited from OneWayGatesTest deliberately
+/// substitute reference/state fixtures AFTER activation to isolate exact edge cases; those are not real market
+/// moves. Actual swaps still run the recorded standard runtime.
 abstract contract MainnetHandoffFixture is ImdFixture {
     uint256 internal constant RECORDED_BLOCK = 26204722;
 
@@ -66,6 +64,8 @@ abstract contract MainnetHandoffFixture is ImdFixture {
     function _claimReward() internal virtual override {
         bytes32[] memory proof = new bytes32[](1);
         proof[0] = _rewardLeaf(bob, 100_000_000 ether - REWARD);
+        // Activation needed no time; only the factory's native contributor lock matures here, after activation.
+        _advance(CONTRIBUTOR_LOCK);
         distributor.claim(0, alice, REWARD, proof);
     }
 
@@ -76,10 +76,11 @@ abstract contract MainnetHandoffFixture is ImdFixture {
     }
 
     function _deployCompanions() internal virtual override {
+        uint256 t = block.timestamp;
+        uint256 n = block.number;
         vm.prank(owner);
-        address sourceAddress = hook.deployPriceSource(type(ImdSampledUsdSource).creationCode, "");
-        ImdSampledUsdSource source = ImdSampledUsdSource(sourceAddress);
-        priceSource = ImdUsdSource(sourceAddress); // shared fixture ABI; deployed code is the sampled source.
+        address sourceAddress = hook.deployPriceSource(type(ImdSpotUsdSource).creationCode, "");
+        priceSource = ImdUsdSource(sourceAddress); // shared fixture ABI; deployed code is the spot source.
         vm.prank(owner);
         (address e, address o, address v) =
             hook.deployCompanions(LAUNCH_NUMBER, IImdUsdSource(sourceAddress), _codes());
@@ -87,17 +88,12 @@ abstract contract MainnetHandoffFixture is ImdFixture {
         oracle = UnlkImdOracle(o);
         vault = ImdFeeVault(payable(v));
         _certifyInitialRound();
-        vm.prank(owner);
-        vm.expectRevert(ImdSampledUsdSource.InvalidPrice.selector);
-        hook.configureAndActivate(rewards, oracle, LAUNCH_NUMBER);
-        assertFalse(hook.activated(), "cold real sampled source cannot activate");
-        source.sample();
-        for (uint256 i; i < 48 hours / 5 minutes; ++i) {
-            _advance(5 minutes);
-            source.sample();
-        }
-        assertEq(source.observationCount(), 577, "all simulated observations made through sample()");
-        assertGt(source.priceUsd(), 0);
+        // Actual recorded pool and feed: a valid current reference with no history.
+        uint256 usd = ImdSpotUsdSource(sourceAddress).priceUsd();
+        emit log_named_decimal_uint("recorded IMD/USD (spot x Chainlink)", usd, 18);
+        assertGt(usd, 0);
+        assertEq(block.timestamp, t, "no time travel before activation");
+        assertEq(block.number, n);
         _approveRouter(alice);
         _approveRouter(bob);
         _approveRouter(payer);
@@ -137,8 +133,12 @@ contract MainnetHandoffRehearsal is
     }
 
     function _breakReference() internal override {
-        // Actual sampled-source staleness, without a price mock: existing rights/trades must survive.
-        _advance(21 minutes);
+        // Stale Chainlink round on the actual source, without a price mock: existing rights/trades must survive.
+        vm.mockCall(
+            MainnetPins.ETHUSD_ADDRESS,
+            abi.encodeWithSignature("latestRoundData()"),
+            abi.encode(uint80(1), feedAnswer, block.timestamp - 2 hours, block.timestamp - 2 hours, uint80(1))
+        );
     }
 
     function setUp() public override {
@@ -146,26 +146,17 @@ contract MainnetHandoffRehearsal is
         ImdFixture.setUp();
     }
 
-    function testRecordedExternalSourceFirstSampleIsNotHistoryAndStillRequiresGas() public {
-        ImdSampledUsdSource fresh = new ImdSampledUsdSource();
-        fresh.sample();
-        assertEq(fresh.observationCount(), 1);
-        vm.expectRevert(ImdSampledUsdSource.InvalidPrice.selector);
-        fresh.priceUsd();
+    function testActivatedImmediatelyFromRecordedCurrentState() public view {
+        assertTrue(hook.activated());
+        assertEq(block.number, RECORDED_BLOCK, "activation without block or time travel");
+        assertGt(oracle.fdvUsd(), 0);
     }
 
-    function testOperatingGasSampleAndCurrentStateCheckpoint() public {
-        ImdSampledUsdSource source = ImdSampledUsdSource(hook.stagedPriceSource());
-        _advance(5 minutes);
+    function testOperatingGasCheckpointOnly() public {
         uint256 beforeGas = gasleft();
-        source.sample();
-        uint256 sampleGas = beforeGas - gasleft();
-        beforeGas = gasleft();
         hook.checkpoint();
         uint256 checkpointGas = beforeGas - gasleft();
-        emit log_named_uint("sample execution gas (base transaction gas excluded)", sampleGas);
         emit log_named_uint("checkpoint execution gas (base transaction gas excluded)", checkpointGas);
-        assertGt(sampleGas, 0);
         assertGt(checkpointGas, 0);
     }
 

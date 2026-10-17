@@ -7,7 +7,7 @@
     "constructorWords": 0,
     "initcodeBytesWithConstructor": 3444,
     "immutableReferences": {
-      "66664": [
+      "67634": [
         {
           "start": 570,
           "length": 32
@@ -31,7 +31,7 @@
     "constructorWords": 2,
     "initcodeBytesWithConstructor": 6007,
     "immutableReferences": {
-      "60653": [
+      "61623": [
         {
           "start": 554,
           "length": 32
@@ -53,7 +53,7 @@
           "length": 32
         }
       ],
-      "60655": [
+      "61625": [
         {
           "start": 730,
           "length": 32
@@ -69,7 +69,7 @@
     "constructorWords": 3,
     "initcodeBytesWithConstructor": 7481,
     "immutableReferences": {
-      "70402": [
+      "82317": [
         {
           "start": 719,
           "length": 32
@@ -87,7 +87,7 @@
           "length": 32
         }
       ],
-      "70405": [
+      "82320": [
         {
           "start": 386,
           "length": 32
@@ -97,7 +97,7 @@
           "length": 32
         }
       ],
-      "70407": [
+      "82322": [
         {
           "start": 488,
           "length": 32
@@ -145,7 +145,7 @@
     "constructorWords": 3,
     "initcodeBytesWithConstructor": 4735,
     "immutableReferences": {
-      "72923": [
+      "73893": [
         {
           "start": 293,
           "length": 32
@@ -187,7 +187,7 @@
           "length": 32
         }
       ],
-      "72925": [
+      "73895": [
         {
           "start": 465,
           "length": 32
@@ -205,7 +205,7 @@
           "length": 32
         }
       ],
-      "72931": [
+      "73901": [
         {
           "start": 599,
           "length": 32
@@ -235,7 +235,7 @@
           "length": 32
         }
       ],
-      "72933": [
+      "73903": [
         {
           "start": 504,
           "length": 32
@@ -256,24 +256,24 @@
     "initcodeBytesWithConstructor": 7263,
     "immutableReferences": {}
   },
-  "ImdSampledUsdSource": {
-    "creationKeccak": "0xcc41e96f4df03749101cba4c0ea0f1b19b8504147e5adfa3da5654ae07123760",
-    "creationBytes": 6677,
-    "runtimeTemplateKeccak": "0x6abe1cc73f4ccaeed5a8974178c10ae5961146b446ef6a63e0e82623cb7d6c53",
-    "runtimeBytes": 6649,
+  "ImdSpotUsdSource": {
+    "creationKeccak": "0xe7b1f5414585af1da7b6c2f98428b84f42e1032dad4d9b4719f108459e4dfcef",
+    "creationBytes": 3208,
+    "runtimeTemplateKeccak": "0x9def905ccf4ef59005f68ac299ae481bc2cc97bd6ada0659bf7027a71eea61e0",
+    "runtimeBytes": 3180,
     "constructorWords": 0,
-    "initcodeBytesWithConstructor": 6677,
+    "initcodeBytesWithConstructor": 3208,
     "immutableReferences": {}
   },
   "UnlkImdHook": {
-    "creationKeccak": "0x80d6b3ea153450c41afd0a97137322e8744cdcdd3d2dea7464dfe58a0c5351df",
+    "creationKeccak": "0x67e57ead2cdfeefc5666b4229134302d717b6e5cdad2e882922bf737c900f6f8",
     "creationBytes": 22183,
-    "runtimeTemplateKeccak": "0x2f2c8aa51c779e5f1595b7736b69b2b7249446a3d83e75130814b07668e95b44",
+    "runtimeTemplateKeccak": "0xf18c3cd46587954554c1afb1a6cf4866849df9be220ecd72668d3f2ed1d0baed",
     "runtimeBytes": 20984,
     "constructorWords": 4,
     "initcodeBytesWithConstructor": 22311,
     "immutableReferences": {
-      "67613": [
+      "68868": [
         {
           "start": 2937,
           "length": 32
@@ -351,7 +351,7 @@
           "length": 32
         }
       ],
-      "67616": [
+      "68871": [
         {
           "start": 3057,
           "length": 32
@@ -401,7 +401,7 @@
           "length": 32
         }
       ],
-      "67618": [
+      "68873": [
         {
           "start": 1685,
           "length": 32
@@ -431,7 +431,7 @@
           "length": 32
         }
       ],
-      "67621": [
+      "68876": [
         {
           "start": 1915,
           "length": 32
@@ -459,7 +459,7 @@
     "constructorWords": 2,
     "initcodeBytesWithConstructor": 4944,
     "immutableReferences": {
-      "70895": [
+      "72150": [
         {
           "start": 104,
           "length": 32
@@ -481,7 +481,7 @@
           "length": 32
         }
       ],
-      "70898": [
+      "72153": [
         {
           "start": 171,
           "length": 32
